@@ -14,7 +14,7 @@ endef
 $(foreach SETTING,$(SETTING_ALL),$(call validate,$(SETTING)))
 
 # Create symbolic links now;
-$(foreach SETTING,$(SETTING_ALL),$(shell ln -s -f $($(SETTING)).h $(SETTING)/$(SETTING).h))
+$(foreach SETTING,$(SETTING_ALL),$(shell [[ -f $($(SETTING)).h ]] && ln -s -f $($(SETTING)).h $(SETTING)/$(SETTING).h))
 
 ##################################################
 # Parameters are set in the region below;
@@ -28,7 +28,7 @@ V = @
 CC = g++
 CC_FLAG = -c -O3 -I. -Wall $(ALL_SETTING_FLAG) -std=c++0x
 LD = g++
-LD_LIB = -lm -lrt
+LD_LIB = -lm -lrt -lboost_program_options
 RM = rm -rf
 MKDIR = mkdir -p
 DE = g++ -MM
@@ -36,7 +36,7 @@ MAKE = make -s
 ECHO = echo
 
 # Our final target;
-TARGET = umnets
+TARGET = ../umnets
 
 # Source, obj and dependent files, separated with a space;
 SRC = $(shell find . -name '*.cc')
