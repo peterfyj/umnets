@@ -14,7 +14,7 @@ endef
 $(foreach SETTING,$(SETTING_ALL),$(call validate,$(SETTING)))
 
 # Create symbolic links now;
-$(foreach SETTING,$(SETTING_ALL),$(shell [[ -f $($(SETTING)).h ]] && ln -s -f $($(SETTING)).h $(SETTING)/$(SETTING).h))
+$(foreach SETTING,$(SETTING_ALL),$(shell [[ -f $(SETTING)/$($(SETTING)).h ]] && ln -s -f $($(SETTING)).h $(SETTING)/$(SETTING).h))
 
 ##################################################
 # Parameters are set in the region below;
