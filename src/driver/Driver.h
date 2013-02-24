@@ -14,12 +14,12 @@ class Driver {
     bool init(int argc, char* argv[]);
     
     template<typename T>
-    T get_opt(const std::string& name) {
+    T get_opt(const std::string& name) const {
       using namespace std;
       try {
         return opt_map[name].as<T>();
       } catch (exception& e) {
-        cerr << e.what() << endl;
+        cerr << "misconfiguration " << name << endl;
         exit(1);
       }
     }
