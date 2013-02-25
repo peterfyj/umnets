@@ -21,7 +21,7 @@ $(foreach SETTING,$(SETTING_ALL),$(shell [[ -f $(SETTING)/$($(SETTING)).h ]] && 
 ##################################################
 
 # Generate user setting flag for compilation;
-ALL_SETTING_FLAG = $(foreach SETTING,$(SETTING_ALL),-DH$(SETTING)=$($(SETTING)))
+ALL_SETTING_FLAG = $(foreach SETTING,$(SETTING_ALL),-D$(SETTING)_t=$($(SETTING)))
 
 # Set basic parameters;
 V = @

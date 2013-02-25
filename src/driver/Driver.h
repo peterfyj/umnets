@@ -1,3 +1,6 @@
+#ifndef DRIVER_DRIVER_H_
+#define DRIVER_DRIVER_H_
+
 #include <boost/program_options.hpp>
 #include <string>
 #include <iostream>
@@ -41,3 +44,5 @@ class Driver {
     po::variables_map opt_map;
 
 };
+
+#endif
