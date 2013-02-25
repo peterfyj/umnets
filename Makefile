@@ -5,7 +5,7 @@
 # Include in user settings;
 include Setting.mk
 # This list conducts 'make' to generate definition flags.
-SETTING_ALL = motion scheduler network pack traffic node logger
+SETTING_ALL = motion scheduler network packet traffic node logger
 
 # Validate all user settings with the above way;
 define validate
@@ -14,19 +14,19 @@ endef
 $(foreach SETTING,$(SETTING_ALL),$(call validate,$(SETTING)))
 
 # Create symbolic links now;
-$(foreach SETTING,$(SETTING_ALL),$(shell [[ -f $(SETTING)/$($(SETTING)).h ]] && ln -s -f $($(SETTING)).h $(SETTING)/$(SETTING).h))
+$(foreach SETTING,$(SETTING_ALL),$(shell [[ -f src/$(SETTING)/$($(SETTING)).h ]] && ln -s -f $($(SETTING)).h src/$(SETTING)/$(SETTING).h))
 
 ##################################################
 # Parameters are set in the region below;
 ##################################################
 
 # Generate user setting flag for compilation;
-ALL_SETTING_FLAG = $(foreach SETTING,$(SETTING_ALL),-D$(SETTING)_t=$($(SETTING)))
+ALL_SETTING_FLAG = $(foreach SETTING,$(SETTING_ALL),-DH$(SETTING)=$($(SETTING)))
 
 # Set basic parameters;
 V = @
 CC = g++
-CC_FLAG = -c -O3 -I. -Wall $(ALL_SETTING_FLAG) -std=c++0x
+CC_FLAG = -c -O3 -Isrc -Wall $(ALL_SETTING_FLAG) -std=c++11
 LD = g++
 LD_LIB = -lm -lrt -lboost_program_options
 RM = rm -rf
@@ -36,7 +36,7 @@ MAKE = make -s
 ECHO = echo
 
 # Our final target;
-TARGET = ../umnets
+TARGET = umnets
 
 # Source, obj and dependent files, separated with a space;
 SRC = $(shell find . -name '*.cc')
@@ -73,8 +73,8 @@ $(DEP): Setting.mk
 # Clean: obj, dependency, link and executable files;
 .PHONY: clean
 clean:
-	$(V)$(RM) $(shell find . -type l)
-	$(V)$(RM) $(shell find . -name '*.o')
-	$(V)$(RM) $(shell find . -name '*.d')
+	$(V)$(RM) $(shell find src -type l)
+	$(V)$(RM) $(shell find src -name '*.o')
+	$(V)$(RM) $(shell find src -name '*.d')
 	$(V)$(RM) $(TARGET)
 

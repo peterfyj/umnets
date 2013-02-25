@@ -4,7 +4,7 @@
 motion = IID
 scheduler = TransGroup
 network = CellularTorus
-pack = SinglePack
+packet = SinglePacket
 traffic = PermutationalPoisson
 node = HHRfNode
 logger = Printer
@@ -36,15 +36,15 @@ motion_all = IID RandomWalk RandomWaypoint HybridRandomWalk
 # 	$2: alpha of y coordinate.  Network should be exactly divided.
 scheduler_all = TransGroup
 
-# CellularTorus: local transmission, one pack a time.
+# CellularTorus: local transmission, one packet a time.
 # 	$1: the size of the torus.  There are $1 * $1 cells.
 network_all = CellularTorus
 
-# SinglePack: Pack with a single information unit.
+# SinglePacket: Packet with a single information unit.
 # 	No parameter.
-pack_all = SinglePack
+packet_all = SinglePacket
 
-# PermutationalPoisson: Permutational traffic, Poisson pack generation.
+# PermutationalPoisson: Permutational traffic, Poisson packet generation.
 # 	$1: lambda of the Poisson stream, relative to a time slot.
 traffic_all = PermutationalPoisson
 

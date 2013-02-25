@@ -3,9 +3,9 @@
 
 int main(int argc, char* argv[]) {
   Driver driver;
-  driver.register_option("driver.loop", po::value<int>(), "loop times");
+  driver.prepare_components();
   if (!driver.init(argc, argv)) {
     return 1;
   }
-  std::cout << driver.get_opt<int>("driver.loop") << std::endl;
+  driver.init_components();
 }

@@ -1,4 +1,12 @@
 #include "driver/Driver.h"
+#include "driver/types.h"
+#include "logger/logger.h"
+#include "motion/motion.h"
+#include "network/network.h"
+#include "node/node.h"
+#include "packet/packet.h"
+#include "scheduler/scheduler.h"
+#include "traffic/traffic.h"
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -12,11 +20,13 @@ Driver::Driver() : generic_opt(options_description("Generic options"))
   register_generic_option("help,h", "print help");
   register_generic_option("config,c", 
       value<string>()->default_value("config.cfg"), "configuration file");
+  register_option("driver.loop", value<int>(), "loop times of the simulation");
 }
 
 bool Driver::init(int argc, char* argv[]) {
   try {
-    store(parse_command_line(argc, argv, generic_opt), opt_map); 
+    cmd_opt.add(generic_opt).add(config_opt);
+    store(parse_command_line(argc, argv, cmd_opt), opt_map); 
     notify(opt_map);
     if (opt_map.count("version")) {
       cout << "umnets v2.0" << endl;
@@ -42,4 +52,17 @@ bool Driver::init(int argc, char* argv[]) {
     return false;
   }
   return true;
+}
+
+void Driver::init_components() {
+}
+
+void Driver::prepare_components() {
+  logger_t::announce_options(*this);
+  motion_t::announce_options(*this);
+  network_t::announce_options(*this);
+  node_t::announce_options(*this);
+  packet_t::announce_options(*this);
+  scheduler_t::announce_options(*this);
+  traffic_t::announce_options(*this);
 }

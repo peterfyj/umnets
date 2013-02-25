@@ -14,8 +14,6 @@ class Driver {
 
     Driver();
 
-    bool init(int argc, char* argv[]);
-    
     template<typename T>
     T get_opt(const std::string& name) const {
       using namespace std;
@@ -26,6 +24,12 @@ class Driver {
         exit(1);
       }
     }
+    
+    bool init(int argc, char* argv[]);
+
+    void init_components();
+
+    void prepare_components();
     
     template<typename...T>
     void register_option(T...opt) {
@@ -41,6 +45,7 @@ class Driver {
 
     po::options_description generic_opt;
     po::options_description config_opt;
+    po::options_description cmd_opt;
     po::variables_map opt_map;
 
 };
