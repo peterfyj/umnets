@@ -7,7 +7,16 @@ class TransGroup {
   
   public:
 
+    static TransGroup* create(Driver& driver);
     static void announce_options(Driver& driver);
+
+  private:
+
+    TransGroup(Driver& driver, int alpha_x, int alpha_y);
+
+    Driver& driver;
+    int alpha_x;
+    int alpha_y;
 
 };
 

@@ -2,6 +2,7 @@
 #define DRIVER_TYPES_H_
 
 #include <utility>
+#include <memory>
 
 class Hlogger;
 class Hmotion;
@@ -12,19 +13,27 @@ class Hscheduler;
 class Htraffic;
 class Driver;
 
-typedef Hlogger logger_t;
-typedef Hmotion motion_t;
-typedef Hnetwork network_t;
-typedef Hnode node_t;
-typedef Hpacket packet_t;
-typedef Hscheduler scheduler_t;
-typedef Htraffic traffic_t;
+typedef Hlogger Logger;
+typedef Hmotion Motion;
+typedef Hnetwork Network;
+typedef Hnode Node;
+typedef Hpacket Packet;
+typedef Hscheduler Scheduler;
+typedef Htraffic Traffic;
 
-typedef std::pair<int, int> dpos_t;
-typedef std::pair<double, double> cpos_t;
+typedef std::unique_ptr<Logger> LoggerPtr;
+typedef std::unique_ptr<Motion> MotionPtr;
+typedef std::unique_ptr<Network> NetworkPtr;
+typedef std::unique_ptr<Node> NodePtr;
+typedef std::unique_ptr<Packet> PacketPtr;
+typedef std::unique_ptr<Scheduler> SchedulerPtr;
+typedef std::unique_ptr<Traffic> TrafficPtr;
+
+typedef std::pair<int, int> IntPos;
+typedef std::pair<double, double> DoublePos;
 typedef struct {
-  dpos_t discrete;
-  cpos_t continuous;
-} pos_t;
+  IntPos i;
+  DoublePos d;
+} Pos;
 
 #endif

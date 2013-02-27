@@ -1,6 +1,7 @@
 #ifndef DRIVER_DRIVER_H_
 #define DRIVER_DRIVER_H_
 
+#include "driver/types.h"
 #include <boost/program_options.hpp>
 #include <string>
 #include <iostream>
@@ -13,9 +14,10 @@ class Driver {
   public:
 
     Driver();
+    ~Driver();
 
     template<typename T>
-    T get_opt(const std::string& name) const {
+    T get_option(const std::string& name) const {
       using namespace std;
       try {
         return opt_map[name].as<T>();
@@ -25,11 +27,15 @@ class Driver {
       }
     }
     
-    bool init(int argc, char* argv[]);
-
+    int init(int argc, char* argv[]);
     void init_components();
-
     void prepare_components();
+    Logger& get_logger();
+    Motion& get_motion();
+    Network& get_network();
+    Scheduler& get_scheduler();
+    Traffic& get_traffic();
+
     
     template<typename...T>
     void register_option(T...opt) {
@@ -43,10 +49,16 @@ class Driver {
       generic_opt.add_options()(opt...);
     }
 
-    po::options_description generic_opt;
-    po::options_description config_opt;
     po::options_description cmd_opt;
+    po::options_description config_opt;
+    po::options_description generic_opt;
     po::variables_map opt_map;
+
+    LoggerPtr logger;
+    MotionPtr motion;
+    NetworkPtr network;
+    SchedulerPtr scheduler;
+    TrafficPtr traffic;
 
 };
 
