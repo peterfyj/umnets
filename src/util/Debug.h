@@ -12,8 +12,8 @@ class Debug {
     static void test(bool condition, const char* fmt, T...arg) {
       if (!condition) {
         fprintf(stderr, fmt, arg...);
+        abort();
       }
-      abort();
     }
 
 };

@@ -1,0 +1,11 @@
+*.o
+*.d
+*.swp
+src/logger/logger.h
+src/motion/motion.h
+src/network/network.h
+src/node/node.h
+src/packet/packet.h
+src/scheduler/scheduler.h
+src/traffic/traffic.h
+umnets

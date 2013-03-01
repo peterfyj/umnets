@@ -4,27 +4,24 @@
 #include "motion/motion.h"
 
 bool CellularTorus::ReceiverIterator::operator==(const ReceiverIterator& ref) {
-  return ref.cell_center == cell_center && &ref.net == &net && ref.now == now;
+  return now == ref.now;
 }
 
 bool CellularTorus::ReceiverIterator::operator!=(const ReceiverIterator& ref) {
-  return !operator==(ref);
+  return now != ref.now;
+}
+
+NodePtr& CellularTorus::ReceiverIterator::operator*() {
+  return *now;
+}
+
+NodePtr& CellularTorus::ReceiverIterator::operator->() {
+  return *now;
 }
 
 auto CellularTorus::ReceiverIterator::operator++() -> ReceiverIterator& {
   ++now;
-  auto lc = last_cell();
-  auto last = net.end(lc.first, lc.second);
-  while (true) {
-    auto current = current_cell();
-    if (now != net.end(current.first, current.second) || now == last) {
-      break;
-    }
-    ++index_now;
-    current = current_cell();
-    now = net.begin(current.first, current.second);
-  }
-  return *this;
+  return validate();
 }
 
 const int CellularTorus::ReceiverIterator::OFFSET_X[9] = {
@@ -32,53 +29,83 @@ const int CellularTorus::ReceiverIterator::OFFSET_X[9] = {
 const int CellularTorus::ReceiverIterator::OFFSET_Y[9] = {
   -1, -1, -1, 0, 0, 0, 1, 1, 1};
 
-CellularTorus::ReceiverIterator::ReceiverIterator(
-    CellularTorus& net, int cx, int cy)
-  : net(net), cell_center(cx, cy) {
-  for (index_now = 0; index_now < 9; ++index_now) {
-    auto c = current_cell();
-    auto& l = net.nodes[c.first][c.second];
-    if (!l.empty()) {
-      now = l.begin();
-      return;
+CellularTorus::ReceiverIterator::ReceiverIterator(CellularTorus* net, 
+    Node* sender) : net(net), sender(sender) {
+  index_now = 0;
+  now = get_current_list().begin();
+}
+
+auto CellularTorus::ReceiverIterator::validate() -> ReceiverIterator& {
+  while (true) {
+    CellList& l = get_current_list();
+    CellIterator e = l.end();
+    while (now != e) {
+      if (now->get() == sender) {
+        ++now;
+      } else {
+        return *this;
+      }
+    }
+    if (++index_now < 9) {
+      now = get_current_list().begin();
+    } else {
+      return set_last();
     }
   }
+}
+
+auto CellularTorus::ReceiverIterator::set_first() -> ReceiverIterator& {
+  index_now = 0;
+  now = get_first_list().begin();
+  return validate();
+}
+
+auto CellularTorus::ReceiverIterator::set_last() -> ReceiverIterator& {
   index_now = 8;
-  auto c = current_cell();
-  now = net.nodes[c.first][c.second].end();
+  now = get_last_list().end();
+  return *this;
 }
 
-CellularTorus::ReceiverIterator::ReceiverIterator(CellularTorus& net)
-  : net(net) {
-}
-
-IntPos CellularTorus::ReceiverIterator::last_cell() {
-  IntPos p(cell_center.first + 1, cell_center.second + 1);
-  if (p.first == net.get_size()) {
-    p.first = 0;
-  }
-  if (p.second == net.get_size()) {
-    p.second = 0;
-  }
-  return p;
-}
-
-IntPos CellularTorus::ReceiverIterator::current_cell() {
-  IntPos p(cell_center.first + OFFSET_X[index_now], 
-      cell_center.second + OFFSET_Y[index_now]);
+auto CellularTorus::ReceiverIterator::get_first_list() -> CellList& {
+  const IntPos& c = sender->get_pos();
+  IntPos p(c.first - 1, c.second - 1);
   if (p.first < 0) {
-    p.first = net.get_size() - 1;
+    p.first = net->get_size() - 1;
   }
   if (p.second < 0) {
-    p.second = net.get_size() - 1;
+    p.second = net->get_size() - 1;
   }
-  if (p.first == net.get_size()) {
+  return net->nodes[p.first][p.second];
+}
+
+auto CellularTorus::ReceiverIterator::get_last_list() -> CellList& {
+  const IntPos& c = sender->get_pos();
+  IntPos p(c.first + 1, c.second + 1);
+  if (p.first == net->get_size()) {
     p.first = 0;
   }
-  if (p.second == net.get_size()) {
+  if (p.second == net->get_size()) {
     p.second = 0;
   }
-  return p;
+  return net->nodes[p.first][p.second];
+}
+
+auto CellularTorus::ReceiverIterator::get_current_list() -> CellList& {
+  const IntPos& c = sender->get_pos();
+  IntPos p(c.first + OFFSET_X[index_now], c.second + OFFSET_Y[index_now]);
+  if (p.first < 0) {
+    p.first = net->get_size() - 1;
+  }
+  if (p.second < 0) {
+    p.second = net->get_size() - 1;
+  }
+  if (p.first == net->get_size()) {
+    p.first = 0;
+  }
+  if (p.second == net->get_size()) {
+    p.second = 0;
+  }
+  return net->nodes[p.first][p.second];
 }
 
 CellularTorus* CellularTorus::create(Driver& driver) {
@@ -108,17 +135,12 @@ auto CellularTorus::end(int x, int y) -> CellIterator {
   return nodes[x][y].end();
 }
 
-auto CellularTorus::receiver_begin(int x, int y) -> ReceiverIterator {
-  return ReceiverIterator(*this, x, y);
+auto CellularTorus::receiver_begin(Node* sender) -> ReceiverIterator {
+  return ReceiverIterator(this, sender).validate();
 }
 
-auto CellularTorus::receiver_end(int x, int y) -> ReceiverIterator {
-  ReceiverIterator iter(*this);
-  iter.cell_center = IntPos(x, y);
-  iter.index_now = 8;
-  auto lc = iter.last_cell();
-  iter.now = nodes[lc.first][lc.second].end();
-  return iter;
+auto CellularTorus::receiver_end(Node* sender) -> ReceiverIterator {
+  return ReceiverIterator(this, sender).set_last();
 }
 
 int CellularTorus::get_size() const {
