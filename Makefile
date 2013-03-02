@@ -26,6 +26,7 @@ ALL_SETTING_FLAG = $(foreach SETTING,$(SETTING_ALL),-DH$(SETTING)=$($(SETTING)))
 # Set basic parameters;
 V = @
 CC = g++
+DOXY = doxygen
 CC_FLAG = -c -O3 -Isrc -Wall $(ALL_SETTING_FLAG) -std=c++11
 LD = g++
 LD_LIB = -lm -lrt -lboost_program_options
@@ -40,6 +41,7 @@ TARGET = umnets
 
 # Source, obj and dependent files, separated with a space;
 SRC = $(shell find . -name '*.cc')
+HDR = $(shell find . -name '*.h')
 OBJ = $(SRC:.cc=.o)
 DEP = $(SRC:.cc=.d)
 
@@ -52,7 +54,7 @@ $(TARGET): $(OBJ)
 	$(V)$(ECHO) LD: $^
 	$(V)$(LD) $^ $(LD_LIB) -o $@
 
-ifneq ($(MAKECMDGOALS),clean)
+ifeq ($(findstring $(MAKECMDGOALS),doc clean),)
 -include $(DEP)
 endif
 
@@ -70,6 +72,11 @@ $(DEP): Setting.mk
 	$(V)$(ECHO) CC: $<
 	$(V)$(CC) $(CC_FLAG) -o $@ $<
 
+.PHONY: doc
+doc: $(SRC) $(HDR) Doxyfile
+	$(V)$(MKDIR) doc
+	$(V)$(DOXY) Doxyfile
+
 # Clean: obj, dependency, link and executable files;
 .PHONY: clean
 clean:
@@ -77,4 +84,5 @@ clean:
 	$(V)$(RM) $(shell find src -name '*.o')
 	$(V)$(RM) $(shell find src -name '*.d')
 	$(V)$(RM) $(TARGET)
+	$(V)$(RM) doc
 
