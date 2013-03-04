@@ -100,3 +100,20 @@ Scheduler& Driver::get_scheduler() {
 Traffic& Driver::get_traffic() {
   return *traffic;
 }
+
+void Driver::start() {
+  tick = 0;
+  logger->before_simulation();
+  int loop = get_option<int>("driver.loop");
+  for (int i = 0; i < loop; ++i) {
+    logger->before_loop();
+    ++tick;
+    network->move_nodes(*motion);
+    logger->after_loop();
+  }
+  logger->after_simulation();
+}
+
+int Driver::get_tick() {
+  return tick;
+}

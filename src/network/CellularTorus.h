@@ -103,19 +103,23 @@ class CellularTorus {
     CellIterator end(int x, int y);
     ReceiverIterator receiver_begin(Node& sender);
     ReceiverIterator receiver_end(Node& sender);
+    void move_nodes(Motion& mover);
     Node& get_node(int tag);
     int get_node_count();
     int get_size() const;
+    void reset_heads();
 
   private:
 
     typedef std::unordered_map<int, Node*> TagMap;
     typedef std::vector<std::vector<std::list<NodePtr>>> CellListArray;
+    typedef std::vector<std::vector<std::list<NodePtr>::iterator>> HeadArray;
 
     CellularTorus(Driver& driver, int size);
     Driver& driver;
     int size;
     CellListArray nodes;
+    HeadArray heads;
     TagMap tag_map;
 
 };

@@ -35,6 +35,8 @@ class Driver {
     Network& get_network();
     Scheduler& get_scheduler();
     Traffic& get_traffic();
+    void start();
+    int get_tick();
 
     
     template<typename...T>
@@ -53,12 +55,12 @@ class Driver {
     po::options_description config_opt;
     po::options_description generic_opt;
     po::variables_map opt_map;
-
     LoggerPtr logger;
     MotionPtr motion;
     NetworkPtr network;
     SchedulerPtr scheduler;
     TrafficPtr traffic;
+    int tick;
 
 };
 

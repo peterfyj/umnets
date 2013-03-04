@@ -1,88 +1,75 @@
 ##################################################
-# User settings are validated in the region below;
+# User settings are validated in the region below.
 ##################################################
 
-# Include in user settings;
+# Include in user settings.
 include Setting.mk
 # This list conducts 'make' to generate definition flags.
-SETTING_ALL = motion scheduler network packet traffic node logger
+export SETTING_ALL = motion scheduler network packet traffic node logger
 
-# Validate all user settings with the above way;
+# Validate all user settings with the above way.
 define validate
 $(if $(filter $($(1)),$($(1)_all)),,$(error Invalid $(1) '$($(1))'; must be one of: $($(1)_all)))
 endef
 $(foreach SETTING,$(SETTING_ALL),$(call validate,$(SETTING)))
 
-# Create symbolic links now;
-$(foreach SETTING,$(SETTING_ALL),$(shell [[ -f src/$(SETTING)/$($(SETTING)).h ]] && ln -s -f $($(SETTING)).h src/$(SETTING)/$(SETTING).h))
-
 ##################################################
-# Parameters are set in the region below;
+# Parameters are set in the region below.
 ##################################################
 
-# Generate user setting flag for compilation;
-ALL_SETTING_FLAG = $(foreach SETTING,$(SETTING_ALL),-DH$(SETTING)=$($(SETTING)))
+# Generate user setting flag for compilation.
+export ALL_SETTING_FLAG = $(foreach SETTING,$(SETTING_ALL),-DH$(SETTING)=$($(SETTING)))
 
-# Set basic parameters;
-V = @
-CC = g++
-DOXY = doxygen
-CC_FLAG = -c -O3 -Isrc -Wall $(ALL_SETTING_FLAG) -std=c++11
-LD = g++
-LD_LIB = -lm -lrt -lboost_program_options
-RM = rm -rf
-MKDIR = mkdir -p
-DE = g++ -MM
-MAKE = make -s
-ECHO = echo
+# Set basic parameters.
+export V = @
+export CC = g++ -c
+export DE = g++ -MM
+export LD = g++
+export DOXY = doxygen
+export CC_FLAG = -O3 -Isrc -Wall $(ALL_SETTING_FLAG) -std=c++11
+export LD_LIB = -lm -lrt -lboost_program_options
+export RM = rm -rf
+export MKDIR = mkdir -p
+export MAKE = make -s
+export ECHO = echo
 
-# Our final target;
-TARGET = umnets
+# Our final target.
+export TARGET = umnets
 
-# Source, obj and dependent files, separated with a space;
-SRC = $(shell find . -name '*.cc')
-HDR = $(shell find . -name '*.h')
-OBJ = $(SRC:.cc=.o)
-DEP = $(SRC:.cc=.d)
+# Source, obj and dependent files, separated with a space.
+export SRC = $(shell find src -name '*.cc')
+export HDR = $(shell find src -name '*.h')
+export OBJ = $(SRC:.cc=.o)
+export DEP = $(SRC:.cc=.d)
 
 ##################################################
-# The rules come in the region below;
+# The rules come in the region below.
 ##################################################
 
-# Default target: generate the executable;
-$(TARGET): $(OBJ)
-	$(V)$(ECHO) LD: $^
-	$(V)$(LD) $^ $(LD_LIB) -o $@
+# Default target: generate the executable.
+.PHONY: all
+all: make_link
+	$(V)$(MAKE) -f src/Makefile $(TARGET)
 
-ifeq ($(findstring $(MAKECMDGOALS),doc clean),)
--include $(DEP)
-endif
+# Make symbolic links.
+.PHONY: make_link
+make_link: $(addsuffix .make_link,$(SETTING_ALL))
 
-$(OBJ): Setting.mk
+%.make_link:
+	$(V)[[ -f src/$*/$($*).h ]] && ln -s -f $($*).h src/$*/$*.h
 
-$(DEP): Setting.mk
-
-# Initial way to generate dependency files.
-%.d: %.cc
-	$(V)$(ECHO) DEP: $<
-	$(V)$(DE) $(CC_FLAG) -MT '$*.o' -o $@ $<
-
-# Generate obj files.
-%.o: %.cc
-	$(V)$(ECHO) CC: $<
-	$(V)$(CC) $(CC_FLAG) -o $@ $<
-
-.PHONY: doc
-doc: $(SRC) $(HDR) Doxyfile
-	$(V)$(MKDIR) doc
+# Make doxygen docs.
+.PHONY: docs
+docs: make_link $(SRC) $(HDR) Doxyfile
+	$(V)$(MKDIR) docs
 	$(V)$(DOXY) Doxyfile
 
-# Clean: obj, dependency, link and executable files;
+# Clean: obj, dependency, link, docs and executable files.
 .PHONY: clean
 clean:
 	$(V)$(RM) $(shell find src -type l)
 	$(V)$(RM) $(shell find src -name '*.o')
 	$(V)$(RM) $(shell find src -name '*.d')
 	$(V)$(RM) $(TARGET)
-	$(V)$(RM) doc
+	$(V)$(RM) docs
 

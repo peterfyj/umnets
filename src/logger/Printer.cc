@@ -13,12 +13,8 @@ Printer* Printer::create(Driver& driver) {
   c.log_node_moved = driver.get_option<bool>("logger.log_node_moved");
   c.log_packet_generated = driver.get_option<bool>(
       "logger.log_packet_generated");
-  c.log_packet_dispatched = driver.get_option<bool>(
-      "logger.log_packet_dispatched");
-  c.log_packet_relayed = driver.get_option<bool>(
-      "logger.log_packet_relayed");
-  c.log_packet_received = driver.get_option<bool>(
-      "logger.log_packet_received");
+  c.log_packet_transfered = driver.get_option<bool>(
+      "logger.log_packet_transfered");
   return new Printer(driver, c);
 };
 
@@ -37,12 +33,36 @@ void Printer::announce_options(Driver& driver) {
       "whether to log when node is moved");
   driver.register_option("logger.log_packet_generated", po::value<bool>(),
       "whether to log when packet is generated");
-  driver.register_option("logger.log_packet_dispatched", po::value<bool>(),
-      "whether to log when packet is dispatched");
-  driver.register_option("logger.log_packet_relayed", po::value<bool>(),
-      "whether to log when packet is relayed");
-  driver.register_option("logger.log_packet_received", po::value<bool>(),
-      "whether to log when packet is received");
+  driver.register_option("logger.log_packet_transfered", po::value<bool>(),
+      "whether to log when packet is transfered");
+}
+
+void Printer::before_simulation() {
+
+}
+
+void Printer::after_simulation() {
+
+}
+
+void Printer::before_loop() {
+
+}
+
+void Printer::after_loop() {
+
+}
+
+void Printer::node_moved(Node& node) {
+
+}
+
+void Printer::packet_generated(Node& where, Packet& pack) {
+
+}
+
+void Printer::packet_transfered(Node& from, Node& to, Packet& pack) {
+
 }
 
 Printer::Printer(Driver& driver, const Switch& control)

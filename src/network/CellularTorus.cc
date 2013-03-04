@@ -2,6 +2,7 @@
 #include "driver/Driver.h"
 #include "node/node.h"
 #include "motion/motion.h"
+#include "logger/logger.h"
 
 bool CellularTorus::Iterator::operator==(const Iterator& ref) {
   return iter == ref.iter;
@@ -175,6 +176,7 @@ void CellularTorus::add_node(Motion& placer, NodePtr&& node) {
   node->set_pos(pos);
   tag_map[node->get_tag()] = node.get();
   nodes[pos.first][pos.second].push_back(std::move(node));
+  heads[pos.first][pos.second] = nodes[pos.first][pos.second].begin();
 }
 
 auto CellularTorus::begin() -> Iterator {
@@ -201,6 +203,25 @@ auto CellularTorus::receiver_end(Node& sender) -> ReceiverIterator {
   return ReceiverIterator(this, &sender).set_last();
 }
 
+void CellularTorus::move_nodes(Motion& mover) {
+  for (int i = 0; i < size; ++i) {
+    for (int j = 0; j < size; ++j) {
+      auto& from = nodes[i][j];
+      auto& from_iter = heads[i][j];
+      while (from_iter != from.end()) {
+        Node& node = *from_iter->get();
+        IntPos pos = mover.random_move(node);
+        node.set_pos(pos);
+        driver.get_logger().node_moved(node);
+        auto& to = nodes[pos.first][pos.second];
+        auto& to_iter = heads[pos.first][pos.second];
+        to.splice(to_iter, from, from_iter++);
+      }
+    }
+  }
+  reset_heads();
+}
+
 Node& CellularTorus::get_node(int tag) {
   return *tag_map[tag];
 }
@@ -213,10 +234,21 @@ int CellularTorus::get_size() const {
   return size;
 }
 
+void CellularTorus::reset_heads() {
+  for (int i = 0; i < size; ++i) {
+    for (int j = 0; j < size; ++j) {
+      heads[i][j] = nodes[i][j].begin();
+    }
+  }
+}
+
 CellularTorus::CellularTorus(Driver& driver, int size)
   : driver(driver), size(size) {
   nodes.resize(size);
-  for (auto& i : nodes) {
-    i.resize(size);
+  heads.resize(size);
+  for (int i = 0; i < size; ++i) {
+    nodes[i].resize(size);
+    heads[i].resize(size);
   }
+  reset_heads();
 }

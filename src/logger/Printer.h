@@ -16,18 +16,32 @@ class Printer {
       bool log_after_loop;
       bool log_node_moved;
       bool log_packet_generated;
-      bool log_packet_dispatched;
-      bool log_packet_relayed;
-      bool log_packet_received;
+      bool log_packet_transfered;
     } Switch;
 
     static Printer* create(Driver& driver);
     static void announce_options(Driver& driver);
 
     template<typename...T>
-    void log_msg(const char* format, T...arg) const {
-      printf(format, arg...);
+    void log(const char* format, T...arg) const {
+      if (control.log_msg) {
+        printf(format, arg...);
+      }
     }
+
+    void before_simulation();
+
+    void after_simulation();
+
+    void before_loop();
+
+    void after_loop();
+
+    void node_moved(Node& node);
+
+    void packet_generated(Node& where, Packet& pack);
+
+    void packet_transfered(Node& from, Node& to, Packet& pack);
 
   private:
 
