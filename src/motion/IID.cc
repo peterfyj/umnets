@@ -2,6 +2,7 @@
 #include "driver/Driver.h"
 #include "util/Math.h"
 #include "network/network.h"
+#include "node/node.h"
 
 IID* IID::create(Driver& driver) {
   return new IID(driver, driver.get_option<int>("motion.step"));
@@ -20,7 +21,11 @@ IntPos IID::random_place(Node& node) const {
 }
 
 IntPos IID::random_move(Node& node) {
-  return random_place(node);
+  if (driver.get_tick() % step != 0) {
+    return node.get_pos();
+  } else {
+    return random_place(node);
+  }
 }
 
 IID::IID(Driver& driver, int step)
