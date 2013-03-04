@@ -15,13 +15,15 @@ class HHRfNode {
     int get_tag() const;
     const IntPos& get_pos() const;
     void set_pos(IntPos& pos);
+    void set_dest_node(HHRfNode& node);
+    HHRfNode& get_dest_node();
 
   private:
 
     explicit HHRfNode(int tag);
 
     int my_tag;
-    int dst_tag;
+    HHRfNode* dest_node;
     IntPos pos;
 
 };

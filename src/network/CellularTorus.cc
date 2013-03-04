@@ -3,6 +3,55 @@
 #include "node/node.h"
 #include "motion/motion.h"
 
+bool CellularTorus::Iterator::operator==(const Iterator& ref) {
+  return iter == ref.iter;
+}
+
+bool CellularTorus::Iterator::operator!=(const Iterator& ref) {
+  return iter != ref.iter;
+}
+
+Node& CellularTorus::Iterator::operator*() {
+  return *iter->second;
+}
+
+Node* CellularTorus::Iterator::operator->() {
+  return iter->second;
+}
+
+auto CellularTorus::Iterator::operator++() -> Iterator& {
+  ++iter;
+  return *this;
+}
+
+CellularTorus::Iterator::Iterator(TagIterator iter) : iter(iter) {
+}
+
+bool CellularTorus::CellIterator::operator==(const CellIterator& ref) {
+  return iter == ref.iter;
+}
+
+bool CellularTorus::CellIterator::operator!=(const CellIterator& ref) {
+  return iter != ref.iter;
+}
+
+Node& CellularTorus::CellIterator::operator*() {
+  return *iter->get();
+}
+
+Node* CellularTorus::CellIterator::operator->() {
+  return iter->get();
+}
+
+auto CellularTorus::CellIterator::operator++() -> CellIterator& {
+  ++iter;
+  return *this;
+}
+
+CellularTorus::CellIterator::CellIterator(CellList::iterator iter)
+  : iter(iter) {
+}
+
 bool CellularTorus::ReceiverIterator::operator==(const ReceiverIterator& ref) {
   return now == ref.now;
 }
@@ -11,12 +60,12 @@ bool CellularTorus::ReceiverIterator::operator!=(const ReceiverIterator& ref) {
   return now != ref.now;
 }
 
-NodePtr& CellularTorus::ReceiverIterator::operator*() {
-  return *now;
+Node& CellularTorus::ReceiverIterator::operator*() {
+  return *now->get();
 }
 
-NodePtr& CellularTorus::ReceiverIterator::operator->() {
-  return *now;
+Node* CellularTorus::ReceiverIterator::operator->() {
+  return now->get();
 }
 
 auto CellularTorus::ReceiverIterator::operator++() -> ReceiverIterator& {
@@ -38,7 +87,7 @@ CellularTorus::ReceiverIterator::ReceiverIterator(CellularTorus* net,
 auto CellularTorus::ReceiverIterator::validate() -> ReceiverIterator& {
   while (true) {
     CellList& l = get_current_list();
-    CellIterator e = l.end();
+    auto e = l.end();
     while (now != e) {
       if (now->get() == sender) {
         ++now;
@@ -124,23 +173,40 @@ CellularTorus::~CellularTorus() {
 void CellularTorus::add_node(Motion& placer, NodePtr&& node) {
   IntPos pos = placer.random_place(*node);
   node->set_pos(pos);
+  tag_map[node->get_tag()] = node.get();
   nodes[pos.first][pos.second].push_back(std::move(node));
 }
 
+auto CellularTorus::begin() -> Iterator {
+  return Iterator(tag_map.begin());
+}
+
+auto CellularTorus::end() -> Iterator {
+  return Iterator(tag_map.end());
+}
+
 auto CellularTorus::begin(int x, int y) -> CellIterator {
-  return nodes[x][y].begin();
+  return CellIterator(nodes[x][y].begin());
 }
 
 auto CellularTorus::end(int x, int y) -> CellIterator {
-  return nodes[x][y].end();
+  return CellIterator(nodes[x][y].end());
 }
 
-auto CellularTorus::receiver_begin(Node* sender) -> ReceiverIterator {
-  return ReceiverIterator(this, sender).validate();
+auto CellularTorus::receiver_begin(Node& sender) -> ReceiverIterator {
+  return ReceiverIterator(this, &sender).validate();
 }
 
-auto CellularTorus::receiver_end(Node* sender) -> ReceiverIterator {
-  return ReceiverIterator(this, sender).set_last();
+auto CellularTorus::receiver_end(Node& sender) -> ReceiverIterator {
+  return ReceiverIterator(this, &sender).set_last();
+}
+
+Node& CellularTorus::get_node(int tag) {
+  return *tag_map[tag];
+}
+
+int CellularTorus::get_node_count() {
+  return tag_map.size();
 }
 
 int CellularTorus::get_size() const {

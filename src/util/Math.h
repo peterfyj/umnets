@@ -7,6 +7,7 @@
  */
 
 #include <random>
+#include <vector>
 
 /**
  * @brief Mathematical tools.
@@ -44,6 +45,18 @@ class Math {
      * @return The random number.
      */
     static double get_random_probability();
+
+    /**
+     * @brief Return a derangement of [0, size).
+     * @return The derangement vector.
+     */
+    static std::vector<int> get_random_derangement(int size);
+
+    /**
+     * @brief Test whether @a v is a derangement.
+     * @return True if it is a derangement.
+     */
+    static bool is_derangement(std::vector<int>& v);
 
   private:
 

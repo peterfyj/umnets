@@ -59,15 +59,16 @@ int Driver::init(int argc, char* argv[]) {
 }
 
 void Driver::init_components() {
+  network = NetworkPtr(Network::create(*this));
   logger = LoggerPtr(Logger::create(*this));
   motion = MotionPtr(Motion::create(*this));
-  network = NetworkPtr(Network::create(*this));
   scheduler = SchedulerPtr(Scheduler::create(*this));
-  traffic = TrafficPtr(Traffic::create(*this));
   int node_count = get_option<int>("node.count");
   for (int i = 0; i < node_count; ++i) {
     network->add_node(*motion, NodePtr(Node::create(*this, i)));
   }
+  traffic = TrafficPtr(Traffic::create(*this));
+  traffic->create_traffic();
 }
 
 void Driver::prepare_components() {

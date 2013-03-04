@@ -5,31 +5,73 @@
 #include <list>
 #include <vector>
 #include <iterator>
+#include <unordered_map>
 
 class CellularTorus {
   
   public:
 
-    friend class Driver;
+    class Iterator : public std::iterator<std::input_iterator_tag, NodePtr> {
 
-    typedef std::list<NodePtr> CellList;
-    typedef std::vector<std::vector<CellList>> CellListArray;
-    typedef CellList::iterator CellIterator;
+      public:
+
+        bool operator==(const Iterator& ref);
+        bool operator!=(const Iterator& ref);
+        Node& operator*();
+        Node* operator->();
+        Iterator& operator++();
+
+      private:
+
+        friend class CellularTorus;
+
+        typedef std::unordered_map<int, Node*>::iterator TagIterator;
+
+        Iterator(TagIterator iter);
+
+        TagIterator iter;
+
+        
+    };
+
+    class CellIterator : public std::iterator<std::input_iterator_tag, Node> {
+
+      public:
+
+        bool operator==(const CellIterator& ref);
+        bool operator!=(const CellIterator& ref);
+        Node& operator*();
+        Node* operator->();
+        CellIterator& operator++();
+
+      private:
+
+        friend class CellularTorus;
+        
+        typedef std::list<NodePtr> CellList;
+
+        CellIterator(CellList::iterator iter);
+
+        CellList::iterator iter;
+
+    };
 
     class ReceiverIterator
-      : public std::iterator<std::input_iterator_tag, NodePtr> {
+      : public std::iterator<std::input_iterator_tag, Node> {
       
       public:
 
         bool operator==(const ReceiverIterator& ref);
         bool operator!=(const ReceiverIterator& ref);
-        NodePtr& operator*();
-        NodePtr& operator->();
+        Node& operator*();
+        Node* operator->();
         ReceiverIterator& operator++();
 
       private:
 
         friend class CellularTorus;
+
+        typedef std::list<NodePtr> CellList;
 
         static const int OFFSET_X[9];
         static const int OFFSET_Y[9];
@@ -44,7 +86,7 @@ class CellularTorus {
 
         CellularTorus* net;
         Node* sender;
-        CellIterator now; // Point to NodePtr.
+        CellList::iterator now;
         int index_now;  // Range from 0 to 8.
 
     };
@@ -55,18 +97,26 @@ class CellularTorus {
     ~CellularTorus();
 
     void add_node(Motion& placer, NodePtr&& node);
+    Iterator begin();
+    Iterator end();
     CellIterator begin(int x, int y);
     CellIterator end(int x, int y);
-    ReceiverIterator receiver_begin(Node* sender);
-    ReceiverIterator receiver_end(Node* sender);
+    ReceiverIterator receiver_begin(Node& sender);
+    ReceiverIterator receiver_end(Node& sender);
+    Node& get_node(int tag);
+    int get_node_count();
     int get_size() const;
 
   private:
+
+    typedef std::unordered_map<int, Node*> TagMap;
+    typedef std::vector<std::vector<std::list<NodePtr>>> CellListArray;
 
     CellularTorus(Driver& driver, int size);
     Driver& driver;
     int size;
     CellListArray nodes;
+    TagMap tag_map;
 
 };
 

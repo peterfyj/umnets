@@ -2,6 +2,7 @@
 #define TRAFFIC_PERMUTATIONALPOISSON_H_
 
 #include "driver/types.h"
+#include <vector>
 
 class PermutationalPoisson {
   
@@ -11,6 +12,8 @@ class PermutationalPoisson {
     static void announce_options(Driver& driver);
 
     ~PermutationalPoisson();
+
+    void create_traffic();
 
   private:
 

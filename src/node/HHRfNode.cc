@@ -25,5 +25,13 @@ void HHRfNode::set_pos(IntPos& pos) {
   this->pos = pos;
 }
 
+void HHRfNode::set_dest_node(Node& node) {
+  dest_node = &node;
+}
+
+HHRfNode& HHRfNode::get_dest_node() {
+  return *dest_node;
+}
+
 HHRfNode::HHRfNode(int tag) : my_tag(tag) {
 }
