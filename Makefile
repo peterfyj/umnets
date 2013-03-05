@@ -61,7 +61,6 @@ make_link: $(addsuffix .make_link,$(SETTING_ALL))
 # Make doxygen docs.
 .PHONY: docs
 docs: make_link $(SRC) $(HDR) Doxyfile
-	$(V)$(MKDIR) docs
 	$(V)$(DOXY) Doxyfile
 
 # Clean: obj, dependency, link, docs and executable files.
