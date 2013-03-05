@@ -1,6 +1,7 @@
 #include "traffic/PermutationalPoisson.h"
 #include "driver/Driver.h"
 #include "network/network.h"
+#include "packet/packet.h"
 #include "node/node.h"
 #include "util/Math.h"
 
@@ -24,15 +25,26 @@ void PermutationalPoisson::create_traffic() {
   vector<Node*> all_node(count, nullptr);
   vector<int> derangement = Math::get_random_derangement(count);
   int i = 0;
-  for (auto iter = network.begin(); iter != network.end(); ++iter) {
+  auto iter_end = network.end();
+  for (auto iter = network.begin(); iter != iter_end; ++iter) {
     all_node[i++] = iter.operator->();
   }
   for (i = 0; i < count; ++i) {
     Node* d = all_node[derangement[i]];
-    all_node[i]->set_dest_node(*d);
+    all_node[i]->set_dest(*d);
+  }
+}
+
+void PermutationalPoisson::assign_packet(Node& node) {
+  int count = poisson(engine);
+  for (int i = 0; i < count; ++i) {
+    node.add_packet(PacketPtr(Packet::create(driver)));
   }
 }
 
 PermutationalPoisson::PermutationalPoisson(Driver& driver, double lambda)
-  : driver(driver), lambda(lambda) {
+  : driver(driver)
+  , poisson(Math::get_poisson_generator(lambda))
+  , engine(Math::get_engine())
+  , lambda(lambda) {
 }

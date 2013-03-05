@@ -10,6 +10,8 @@ class TransGroup {
     static TransGroup* create(Driver& driver);
     static void announce_options(Driver& driver);
 
+    void schedule();
+
   private:
 
     TransGroup(Driver& driver, int alpha_x, int alpha_y);

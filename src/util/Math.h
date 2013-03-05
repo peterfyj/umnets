@@ -17,6 +17,10 @@ class Math {
 
   public:
 
+    typedef std::poisson_distribution<int> PoissonGenerator;
+    typedef std::uniform_real_distribution<double> UniformGenerator;
+    typedef std::default_random_engine Engine;
+
     /**
      * @brief Return true with probability @a numerator / @a denominator.
      * @param numerator Numerator for the probability.
@@ -47,6 +51,21 @@ class Math {
     static double get_random_probability();
 
     /**
+     * @brief Return a poisson generator.
+     * @param lambda The lambda for the poisson distribution.
+     * @return The poisson generator containing operator().
+     */
+    static PoissonGenerator get_poisson_generator(double lambda);
+
+    /**
+     * @brief Return a uniform generator between [@a s, @a e].
+     * @param s Starting point for the distribution.
+     * @param e Ending point for the distribution.
+     * @return The uniform generator containing operator().
+     */
+    static UniformGenerator get_uniform_generator(double s, double e);
+
+    /**
      * @brief Return a derangement of [0, size).
      * @return The derangement vector.
      */
@@ -58,10 +77,16 @@ class Math {
      */
     static bool is_derangement(std::vector<int>& v);
 
+    /**
+     * @brief Default initialized engine.
+     * @return The engin that may be used.
+     */
+    static Engine& get_engine();
+
   private:
 
-    static std::default_random_engine engine;
-    static std::uniform_real_distribution<double> prob_distribution;
+    static Engine engine;
+    static UniformGenerator prob_distribution;
 
 };
 

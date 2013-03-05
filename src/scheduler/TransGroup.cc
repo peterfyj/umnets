@@ -14,6 +14,10 @@ void TransGroup::announce_options(Driver& driver) {
       "alpha for y scale of the transmission group algorithm");
 }
 
+void TransGroup::schedule() {
+  //TODO
+}
+
 TransGroup::TransGroup(Driver& driver, int alpha_x, int alpha_y)
   : driver(driver), alpha_x(alpha_x), alpha_y(alpha_y) {
 }

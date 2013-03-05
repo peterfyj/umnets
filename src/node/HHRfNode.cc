@@ -1,8 +1,10 @@
 #include "node/HHRfNode.h"
 #include "driver/Driver.h"
+#include "packet/packet.h"
+#include <utility>
 
-HHRfNode* HHRfNode::create(Driver& driver, int tag) {
-  return new HHRfNode(tag);
+HHRfNode* HHRfNode::create(Driver& driver) {
+  return new HHRfNode(driver);
 }
 
 void HHRfNode::announce_options(Driver& driver) {
@@ -13,8 +15,12 @@ void HHRfNode::announce_options(Driver& driver) {
 HHRfNode::~HHRfNode() {
 }
 
+void HHRfNode::set_tag(int tag) {
+  node_tag = tag;
+}
+
 int HHRfNode::get_tag() const {
-  return my_tag;
+  return node_tag;
 }
 
 const IntPos& HHRfNode::get_pos() const {
@@ -25,13 +31,21 @@ void HHRfNode::set_pos(IntPos& pos) {
   this->pos = pos;
 }
 
-void HHRfNode::set_dest_node(Node& node) {
+void HHRfNode::set_dest(Node& node) {
   dest_node = &node;
 }
 
-HHRfNode& HHRfNode::get_dest_node() {
+void HHRfNode::add_packet(PacketPtr&& packet) {
+  packet->set_src(*this);
+  packet->set_dest(*dest_node);
+  packet->set_tag(next_packet_tag++);
+  packet->get_time_stamp().push_back(driver.get_tick());
+  waiting_queue.push_back(std::move(packet));
+}
+
+HHRfNode& HHRfNode::get_dest() {
   return *dest_node;
 }
 
-HHRfNode::HHRfNode(int tag) : my_tag(tag) {
+HHRfNode::HHRfNode(Driver& driver) : driver(driver), next_packet_tag(0) {
 }

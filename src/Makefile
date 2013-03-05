@@ -2,6 +2,8 @@ $(TARGET): $(OBJ)
 	$(V)$(ECHO) LD: $^
 	$(V)$(LD) $^ $(LD_LIB) -o $@
 
+# Include dependency files.
+# This is why we need this extra Makefile.
 -include $(DEP)
 
 $(OBJ): Setting.mk

@@ -65,7 +65,9 @@ void Driver::init_components() {
   scheduler = SchedulerPtr(Scheduler::create(*this));
   int node_count = get_option<int>("node.count");
   for (int i = 0; i < node_count; ++i) {
-    network->add_node(*motion, NodePtr(Node::create(*this, i)));
+    NodePtr n(Node::create(*this));
+    n->set_tag(i);
+    network->add_node(*motion, std::move(n));
   }
   traffic = TrafficPtr(Traffic::create(*this));
   traffic->create_traffic();
@@ -107,11 +109,20 @@ void Driver::start() {
   int loop = get_option<int>("driver.loop");
   for (int i = 0; i < loop; ++i) {
     logger->before_loop();
-    ++tick;
-    network->move_nodes(*motion);
+    tick_loop();
     logger->after_loop();
   }
   logger->after_simulation();
+}
+
+void Driver::tick_loop() {
+  ++tick;
+  network->move_nodes(*motion);
+  auto iter_end = network->end();
+  for (auto iter = network->begin(); iter != iter_end; ++iter) {
+    traffic->assign_packet(*iter);
+  }
+  scheduler->schedule();
 }
 
 int Driver::get_tick() {

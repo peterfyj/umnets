@@ -2,6 +2,7 @@
 #define TRAFFIC_PERMUTATIONALPOISSON_H_
 
 #include "driver/types.h"
+#include "util/Math.h"
 #include <vector>
 
 class PermutationalPoisson {
@@ -15,11 +16,15 @@ class PermutationalPoisson {
 
     void create_traffic();
 
+    void assign_packet(Node& node);
+
   private:
 
     PermutationalPoisson(Driver& driver, double lambda);
 
     Driver& driver;
+    Math::PoissonGenerator poisson;
+    Math::Engine& engine;
     double lambda;
 
 };

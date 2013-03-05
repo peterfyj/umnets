@@ -23,6 +23,14 @@ double Math::get_random_probability() {
   return prob_distribution(engine);
 }
 
+auto Math::get_poisson_generator(double lambda) -> PoissonGenerator {
+  return PoissonGenerator(lambda);
+}
+
+auto Math::get_uniform_generator(double s, double e) -> UniformGenerator {
+  return UniformGenerator(s, e);
+}
+
 vector<int> Math::get_random_derangement(int size) {
   vector<int> ret(size);
   do {
@@ -43,6 +51,10 @@ bool Math::is_derangement(vector<int>& v) {
   return true;
 }
 
-default_random_engine Math::engine(random_device().operator()());
-uniform_real_distribution<double> Math::prob_distribution(0, 1);
+auto Math::get_engine() -> Engine& {
+  return engine;
+}
+
+Math::Engine Math::engine(random_device().operator()());
+Math::UniformGenerator Math::prob_distribution(0, 1);
 

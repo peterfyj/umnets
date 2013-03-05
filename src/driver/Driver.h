@@ -36,6 +36,7 @@ class Driver {
     Scheduler& get_scheduler();
     Traffic& get_traffic();
     void start();
+    void tick_loop();
     int get_tick();
 
     

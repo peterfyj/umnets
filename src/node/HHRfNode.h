@@ -2,27 +2,36 @@
 #define NODE_HHRFNODE_H_
 
 #include "driver/types.h"
+#include <list>
 
 class HHRfNode {
   
   public:
 
-    static HHRfNode* create(Driver& driver, int tag);
+    typedef std::list<PacketPtr> Queue;
+
+    static HHRfNode* create(Driver& driver);
     static void announce_options(Driver& driver);
 
     ~HHRfNode();
 
+    void set_tag(int tag);
     int get_tag() const;
     const IntPos& get_pos() const;
     void set_pos(IntPos& pos);
-    void set_dest_node(HHRfNode& node);
-    HHRfNode& get_dest_node();
+    void set_dest(HHRfNode& node);
+    void add_packet(PacketPtr&& packet);
+    HHRfNode& get_dest();
 
   private:
 
-    explicit HHRfNode(int tag);
+    explicit HHRfNode(Driver& driver);
 
-    int my_tag;
+    Driver& driver;
+    int next_packet_tag;
+    Queue waiting_queue;
+    Queue sent_queue;
+    int node_tag;
     HHRfNode* dest_node;
     IntPos pos;
 
