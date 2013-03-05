@@ -98,7 +98,7 @@ class CellularTorus {
       if (d == 0) {
         return b;
       }
-      std::advance(a, Math::get_random_int(1, d));
+      std::advance(a, Math::get_random_int(0, d - 1));
       return a;
     }
 
