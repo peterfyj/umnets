@@ -2,6 +2,7 @@
 #define NETWORK_CELLULARTORUS_H_
 
 #include "driver/types.h"
+#include "util/Math.h"
 #include <list>
 #include <vector>
 #include <iterator>
@@ -80,9 +81,9 @@ class CellularTorus {
         ReceiverIterator& validate();
         ReceiverIterator& set_first();  // Will validate.
         ReceiverIterator& set_last();  // Will validate.
-        CellList& get_first_list();
+        CellList& get_first_list(); 
         CellList& get_last_list();
-        CellList& get_current_list();
+        CellList& get_current_list();  // According to index_now.
 
         CellularTorus* net;
         Node* sender;
@@ -90,6 +91,16 @@ class CellularTorus {
         int index_now;  // Range from 0 to 8.
 
     };
+
+    template<typename T>
+    static T random_choose(T a, T b) {
+      int d = std::distance(a, b);
+      if (d == 0) {
+        return b;
+      }
+      std::advance(a, Math::get_random_int(1, d));
+      return a;
+    }
 
     static CellularTorus* create(Driver& driver);
     static void announce_options(Driver& driver);

@@ -1,4 +1,6 @@
 #include "scheduler/TransGroup.h"
+#include "network/network.h"
+#include "node/node.h"
 #include "driver/Driver.h"
 
 TransGroup* TransGroup::create(Driver& driver) {
@@ -15,9 +17,26 @@ void TransGroup::announce_options(Driver& driver) {
 }
 
 void TransGroup::schedule() {
-  //TODO
+  Network& network = driver.get_network();
+  int size = network.get_size();
+  for (int x = start_x; x < size; x += alpha_x) {
+    for (int y = start_y; y < size; y += alpha_y) {
+      auto iter_end = network.end(x, y);
+      auto c = Network::random_choose(network.begin(x, y), iter_end);
+      if (c != iter_end) {
+        c->scheduled();
+      }
+    }
+  }
+  if (++start_x >= alpha_x) {
+    start_x = 0;
+    if (++start_y >= alpha_y) {
+      start_y = 0;
+    }
+  }
 }
 
 TransGroup::TransGroup(Driver& driver, int alpha_x, int alpha_y)
-  : driver(driver), alpha_x(alpha_x), alpha_y(alpha_y) {
+  : driver(driver), alpha_x(alpha_x), alpha_y(alpha_y)
+  , start_x(0), start_y(0) {
 }

@@ -1,6 +1,8 @@
 #include "node/HHRfNode.h"
 #include "driver/Driver.h"
 #include "packet/packet.h"
+#include "util/Math.h"
+#include "network/network.h"
 #include <utility>
 
 HHRfNode* HHRfNode::create(Driver& driver) {
@@ -45,6 +47,37 @@ void HHRfNode::add_packet(PacketPtr&& packet) {
 
 HHRfNode& HHRfNode::get_dest() {
   return *dest_node;
+}
+
+void HHRfNode::scheduled() {
+  Network& network = driver.get_network();
+  auto iter_end = network.receiver_end(*this);
+  for (auto iter = network.receiver_begin(*this); iter != iter_end; ++iter) {
+    if (&iter->get_dest() == this) {
+      SD(*iter);
+      return;
+    }
+  }
+  auto iter = Network::random_choose(network.receiver_begin(*this), iter_end);
+  if (iter != iter_end) {
+    if (Math::happen(1, 2)) {
+      SR(*iter);
+    } else {
+      RD(*iter);
+    }
+  }
+}
+
+void HHRfNode::SD(HHRfNode& dest) {
+  //TODO
+}
+
+void HHRfNode::SR(HHRfNode& relay) {
+  //TODO
+}
+
+void HHRfNode::RD(HHRfNode& other_dest) {
+  //TODO
 }
 
 HHRfNode::HHRfNode(Driver& driver) : driver(driver), next_packet_tag(0) {

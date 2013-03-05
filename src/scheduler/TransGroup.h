@@ -19,6 +19,8 @@ class TransGroup {
     Driver& driver;
     int alpha_x;
     int alpha_y;
+    int start_x;
+    int start_y;
 
 };
 

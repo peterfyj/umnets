@@ -204,10 +204,10 @@ auto CellularTorus::receiver_end(Node& sender) -> ReceiverIterator {
 }
 
 void CellularTorus::move_nodes(Motion& mover) {
-  for (int i = 0; i < size; ++i) {
-    for (int j = 0; j < size; ++j) {
-      auto& from = nodes[i][j];
-      auto& from_iter = heads[i][j];
+  for (int x = 0; x < size; ++x) {
+    for (int y = 0; y < size; ++y) {
+      auto& from = nodes[x][y];
+      auto& from_iter = heads[x][y];
       while (from_iter != from.end()) {
         Node& node = *from_iter->get();
         IntPos pos = mover.random_move(node);
@@ -235,9 +235,9 @@ int CellularTorus::get_size() const {
 }
 
 void CellularTorus::reset_heads() {
-  for (int i = 0; i < size; ++i) {
-    for (int j = 0; j < size; ++j) {
-      heads[i][j] = nodes[i][j].begin();
+  for (int x = 0; x < size; ++x) {
+    for (int y = 0; y < size; ++y) {
+      heads[x][y] = nodes[x][y].begin();
     }
   }
 }

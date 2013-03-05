@@ -22,6 +22,10 @@ class HHRfNode {
     void set_dest(HHRfNode& node);
     void add_packet(PacketPtr&& packet);
     HHRfNode& get_dest();
+    void scheduled();
+    void SD(HHRfNode& dest);
+    void SR(HHRfNode& relay);
+    void RD(HHRfNode& other_dest);
 
   private:
 
