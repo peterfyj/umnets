@@ -3,6 +3,7 @@
 #include "packet/packet.h"
 #include "util/Math.h"
 #include "network/network.h"
+#include "logger/logger.h"
 #include <utility>
 #include <iterator>
 
@@ -43,6 +44,9 @@ void HHRfNode::add_packet(PacketPtr&& packet) {
   packet->set_dest(*dest_node);
   packet->set_tag(request_map[dest_node]++);
   packet->get_time_stamp().push_back(driver.get_tick());
+  driver.get_logger().log("[%d] packet %d (%d)->(%d) generated in (%d)\n",
+      driver.get_tick(), packet->get_tag(), packet->get_src().get_tag(),
+      packet->get_dest().get_tag(), node_tag);
   waiting_queue.push_back(std::move(packet));
 }
 
