@@ -44,6 +44,6 @@ SinglePacket::SinglePacket() {
 }
 
 SinglePacket::SinglePacket(const SinglePacket& ref)
-  : src(ref.src), dest(ref.src), time_stamp(ref.time_stamp)
+  : src(ref.src), dest(ref.dest), time_stamp(ref.time_stamp)
   , packet_tag(ref.packet_tag) {
 }

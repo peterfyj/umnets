@@ -84,15 +84,14 @@ void HHRfNode::receive(HHRfNode& src, PacketPtr&& packet) {
 
 void HHRfNode::SD(HHRfNode& dest) {
   int tag = dest.request_map[&dest];
-  if (waiting_queue.empty() || waiting_queue.front()->get_tag() > tag) {
-    if (sent_queue.empty() || tag > sent_queue.back()->get_tag()) {
-      return;
-    }
-    auto iter = find_in_sequent_queue(sent_queue, tag);
+  auto iter = find_in_sequent_queue(sent_queue, tag);
+  if (iter != sent_queue.end()) {
     dest.receive(*this, std::move(*iter));
     sent_queue.erase(sent_queue.begin(), ++iter);
-  } else {
-    auto iter = find_in_sequent_queue(waiting_queue, tag);
+    return;
+  }
+  iter = find_in_sequent_queue(waiting_queue, tag);
+  if (iter != waiting_queue.end()) {
     dest.receive(*this, std::move(*iter));
     dispatched = 0;
     waiting_queue.erase(waiting_queue.begin(), ++iter);
@@ -132,19 +131,23 @@ void HHRfNode::RD(HHRfNode& other_dest) {
 }
 
 auto HHRfNode::find_in_sequent_queue(Queue& q, int tag) -> Queue::iterator {
+  if (q.empty()) {
+    return q.end();
+  }
   int front_tag = q.front()->get_tag();
   int back_tag = q.back()->get_tag();
-  int closer_tag;
-  Queue::iterator iter;
-  if (back_tag + front_tag > (tag << 1)) {  // Closer to front.
-    iter = q.begin();
-    closer_tag = front_tag;
-  } else {
-    iter = --q.end();
-    closer_tag = back_tag;
+  if (front_tag > tag || back_tag < tag) {
+    return q.end();
   }
-  std::advance(iter, tag - closer_tag);
-  return iter;
+  if (back_tag + front_tag > (tag << 1)) {  // Closer to front.
+    auto iter = q.begin();
+    std::advance(iter, tag - front_tag);
+    return iter;
+  } else {
+    auto iter = q.end();
+    std::advance(iter, tag - back_tag - 1);
+    return iter;
+  }
 }
 
 HHRfNode::HHRfNode(Driver& driver, int f)
