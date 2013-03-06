@@ -116,16 +116,17 @@ void HHRfNode::SR(HHRfNode& relay) {
 
 void HHRfNode::RD(HHRfNode& other_dest) {
   Queue& relay_queue = relay_map[&other_dest];
-  if (relay_queue.empty()) {
-    return;
-  }
   int tag = other_dest.request_map[&other_dest];
-  auto iter_end = relay_queue.end();
-  for (auto iter = relay_queue.begin(); iter != iter_end; ++iter) {
-    if ((*iter)->get_tag() == tag) {
-      other_dest.receive(*this, std::move(*iter));
-      relay_queue.erase(relay_queue.begin(), iter);
-      return;
+  while (!relay_queue.empty()) {
+    int qtag = relay_queue.front()->get_tag();
+    if (qtag < tag) {
+      relay_queue.pop_front();
+    } else {
+      if (qtag == tag) {
+        other_dest.receive(*this, std::move(relay_queue.front()));
+        relay_queue.pop_front();
+      }
+      break;
     }
   }
 }
