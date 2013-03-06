@@ -20,12 +20,13 @@ class PermutationalPoisson {
 
   private:
 
-    PermutationalPoisson(Driver& driver, double lambda);
+    PermutationalPoisson(Driver& driver, double lambda, int tag);
 
     Driver& driver;
     Math::PoissonGenerator poisson;
     Math::Engine& engine;
     double lambda;
+    int tagged_sender;
 
 };
 
