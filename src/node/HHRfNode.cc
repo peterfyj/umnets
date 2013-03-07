@@ -75,6 +75,7 @@ void HHRfNode::receive(HHRfNode& src, PacketPtr&& packet) {
     ++request_map[this];
     packet = nullptr;
   } else { // SR.
+    request_map[&packet->get_dest()] = packet->get_tag() + 1;
     relay_map[&packet->get_dest()].push_back(std::move(packet));
   }
 }
@@ -101,7 +102,7 @@ void HHRfNode::SR(HHRfNode& relay) {
     return;
   }
   PacketPtr& ptr = waiting_queue.front();
-  if (relay.request_map[&ptr->get_dest()] > ptr->get_tag()) {
+  if (relay.request_map[dest_node] > ptr->get_tag()) {
     return;
   }
   relay.receive(*this, PacketPtr(ptr->clone()));
