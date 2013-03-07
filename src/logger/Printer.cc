@@ -1,5 +1,7 @@
 #include "logger/Printer.h"
 #include "driver/Driver.h"
+#include "node/node.h"
+#include "packet/packet.h"
 
 Printer* Printer::create(Driver& driver) {
   Switch c;
@@ -38,31 +40,64 @@ void Printer::announce_options(Driver& driver) {
 }
 
 void Printer::before_simulation() {
-
+  if (!control.log_before_simulation) {
+    return;
+  }
 }
 
 void Printer::after_simulation() {
-
+  if (!control.log_after_simulation) {
+    return;
+  }
 }
 
 void Printer::before_loop() {
-
+  if (!control.log_before_loop) {
+    return;
+  }
 }
 
 void Printer::after_loop() {
-
+  if (!control.log_after_loop) {
+    return;
+  }
 }
 
 void Printer::node_moved(Node& node) {
-
+  if (!control.log_node_moved) {
+    return;
+  }
 }
 
-void Printer::packet_generated(Node& where, Packet& pack) {
-
+void Printer::packet_generated(Node& where, Packet& packet) {
+  if (!control.log_packet_generated) {
+    return;
+  }
+  printf("[%d] packet %d (%d)->(%d): generated at (%d)\n",
+      driver.get_tick(), packet.get_tag(), packet.get_src().get_tag(),
+      packet.get_dest().get_tag(), where.get_tag());
 }
 
-void Printer::packet_transfered(Node& from, Node& to, Packet& pack) {
-
+void Printer::packet_transfered(Node& from, Node& to, Packet& packet) {
+  if (!control.log_packet_transfered) {
+    return;
+  }
+  static const char* sd = "SD";
+  static const char* rd = "RD";
+  static const char* sr = "SR";
+  const char* now;
+  if (&packet.get_dest() == &to) {  // SD or RD.
+    if (&packet.get_src() == &from) {  // SD.
+      now = sd;
+    } else {  // RD.
+      now = rd;
+    }
+  } else { // SR
+    now = sr;
+  }
+  printf("[%d] packet %d (%d)->(%d): %s (%d)->(%d)\n",
+      driver.get_tick(), packet.get_tag(), packet.get_src().get_tag(),
+      packet.get_dest().get_tag(), now, from.get_tag(), to.get_tag());
 }
 
 Printer::Printer(Driver& driver, const Switch& control)

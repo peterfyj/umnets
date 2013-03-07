@@ -32,6 +32,7 @@ const IntPos& HHRfNode::get_pos() const {
 }
 
 void HHRfNode::set_pos(IntPos& pos) {
+  driver.get_logger().node_moved(*this);
   this->pos = pos;
 }
 
@@ -44,6 +45,7 @@ void HHRfNode::add_packet(PacketPtr&& packet) {
   packet->set_dest(*dest_node);
   packet->set_tag(request_map[dest_node]++);
   packet->get_time_stamp().push_back(driver.get_tick());
+  driver.get_logger().packet_generated(*this, *packet);
   waiting_queue.push_back(std::move(packet));
 }
 
@@ -71,6 +73,8 @@ void HHRfNode::scheduled() {
 }
 
 void HHRfNode::receive(HHRfNode& src, PacketPtr&& packet) {
+  packet->get_time_stamp().push_back(driver.get_tick());
+  driver.get_logger().packet_transfered(src, *this, *packet);
   if (&packet->get_dest() == this) {  // SD or RD.
     ++request_map[this];
     packet = nullptr;

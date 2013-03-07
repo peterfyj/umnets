@@ -39,9 +39,9 @@ class Printer {
 
     void node_moved(Node& node);
 
-    void packet_generated(Node& where, Packet& pack);
+    void packet_generated(Node& where, Packet& packet);
 
-    void packet_transfered(Node& from, Node& to, Packet& pack);
+    void packet_transfered(Node& from, Node& to, Packet& packet);
 
   private:
 
