@@ -5,7 +5,7 @@
 
 /**
  * @defgroup packet
- * @brief Group that difines the data being transmitted.
+ * @brief Group that defines the data being transmitted.
  *
  * This group refers to the network data. Some additional functionalities may
  * be added for simulation analysis.
