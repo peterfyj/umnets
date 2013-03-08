@@ -26,7 +26,7 @@ export CC = g++ -c
 export DE = g++ -MM
 export LD = g++
 export DOXY = doxygen
-export CC_FLAG = -O3 -Isrc -Wall $(ALL_SETTING_FLAG) -std=c++11
+export CC_FLAG = -O3 -Isrc -Wall $(ALL_SETTING_FLAG) -std=c++0x
 export LD_LIB = -lm -lrt -lboost_program_options
 export RM = rm -rf
 export MKDIR = mkdir -p
