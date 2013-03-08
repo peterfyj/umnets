@@ -17,8 +17,19 @@ class Math {
 
   public:
 
+    /**
+     * @brief The generator for Poisson process generation with a given lambda.
+     */
     typedef std::poisson_distribution<int> PoissonGenerator;
+
+    /**
+     * @brief Uniform generator for a given range.
+     */
     typedef std::uniform_real_distribution<double> UniformGenerator;
+
+    /**
+     * @brief The engine for the random number fetch.
+     */
     typedef std::default_random_engine Engine;
 
     /**

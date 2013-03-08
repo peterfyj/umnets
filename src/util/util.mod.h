@@ -1,6 +1,6 @@
 /**
  * @file util/util.mod.h
- * @brief Group definition for util.
+ * @brief Group definition for @ref util.
  */
 
 /**
