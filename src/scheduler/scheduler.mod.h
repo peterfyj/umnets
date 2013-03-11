@@ -4,7 +4,7 @@
  */
 
 /**
- * @defgroup scheduler
+ * @defgroup scheduler Scheduler
  * @brief Group for scheduler.
  *
  * Group scheduler schedules concurrent transmissions, either by avoiding or by

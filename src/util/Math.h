@@ -41,7 +41,7 @@ class Math {
     static bool happen(int numerator, int denominator);
 
     /**
-     * @brief Return true with probability @prob.
+     * @brief Return true with probability @a prob.
      * @param prob The probability.
      * @return True if it happens.
      */

@@ -4,7 +4,7 @@
  */
 
 /**
- * @defgroup traffic
+ * @defgroup traffic Traffic pattern
  * @brief Group for traffic.
  *
  * Group traffic defines the traffic flow in the network.  It defines each link

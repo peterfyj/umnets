@@ -4,7 +4,7 @@
  */
 
 /**
- * @defgroup node
+ * @defgroup node Network node
  * @brief Group that defines network node and its behavior.
  *
  * This group defines network node especially its behavior, including its

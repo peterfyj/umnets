@@ -4,6 +4,6 @@
  */
 
 /**
- * @defgroup util
+ * @defgroup util Utilities
  * @brief Group for utilities.
  */

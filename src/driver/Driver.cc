@@ -115,6 +115,10 @@ void Driver::start() {
   logger->after_simulation();
 }
 
+int Driver::get_tick() {
+  return tick;
+}
+
 void Driver::tick_loop() {
   ++tick;
   network->move_nodes(*motion);
@@ -125,6 +129,3 @@ void Driver::tick_loop() {
   scheduler->schedule();
 }
 
-int Driver::get_tick() {
-  return tick;
-}

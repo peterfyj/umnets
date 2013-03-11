@@ -234,14 +234,6 @@ int CellularTorus::get_size() const {
   return size;
 }
 
-void CellularTorus::reset_heads() {
-  for (int x = 0; x < size; ++x) {
-    for (int y = 0; y < size; ++y) {
-      heads[x][y] = nodes[x][y].begin();
-    }
-  }
-}
-
 CellularTorus::CellularTorus(Driver& driver, int size)
   : driver(driver), size(size) {
   nodes.resize(size);
@@ -252,3 +244,12 @@ CellularTorus::CellularTorus(Driver& driver, int size)
   }
   reset_heads();
 }
+
+void CellularTorus::reset_heads() {
+  for (int x = 0; x < size; ++x) {
+    for (int y = 0; y < size; ++y) {
+      heads[x][y] = nodes[x][y].begin();
+    }
+  }
+}
+

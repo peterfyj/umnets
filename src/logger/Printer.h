@@ -1,12 +1,79 @@
 #ifndef LOGGER_PRINTER_H_
 #define LOGGER_PRINTER_H_
 
-#include "driver/types.h"
-#include "stdio.h"
+/**
+ * @file logger/Printer.h
+ * @brief Header for Printer.
+ */
 
+#include "driver/types.h"
+#include <stdio.h>
+
+/**
+ * @brief Printer that prints readable information.
+ * @ingroup logger
+ */
 class Printer {
 
   public:
+
+    /**
+     * @brief Create instance.
+     * @return The instance that should be deleted by user.
+     */
+    static Printer* create(Driver& driver);
+
+    /**
+     * @brief Announce the options that is recognized by the class.
+     */
+    static void announce_options(Driver& driver);
+
+    /**
+     * @brief Accustomed log with c-style format.
+     */
+    template<typename...T>
+    void log(const char* format, T...arg) const {
+      if (control.log_msg) {
+        printf(format, arg...);
+      }
+    }
+
+    /**
+     * @brief Called before simulation.
+     */
+    void before_simulation();
+
+    /**
+     * @brief Called after simulation.
+     */
+    void after_simulation();
+
+    /**
+     * @brief Called before each simulation loop.
+     */
+    void before_loop();
+
+    /**
+     * @brief Called after each simulation loop.
+     */
+    void after_loop();
+
+    /**
+     * @brief Called after a node's position is refreshed.
+     */
+    void node_moved(Node& node);
+
+    /**
+     * @brief Called after a packet is generated at a certain node.
+     */
+    void packet_generated(Node& where, Packet& packet);
+
+    /**
+     * @brief Called when a packet is being transfered from a node to another.
+     */
+    void packet_transfered(Node& from, Node& to, Packet& packet);
+
+  private:
 
     typedef struct {
       bool log_msg;
@@ -18,32 +85,6 @@ class Printer {
       bool log_packet_generated;
       bool log_packet_transfered;
     } Switch;
-
-    static Printer* create(Driver& driver);
-    static void announce_options(Driver& driver);
-
-    template<typename...T>
-    void log(const char* format, T...arg) const {
-      if (control.log_msg) {
-        printf(format, arg...);
-      }
-    }
-
-    void before_simulation();
-
-    void after_simulation();
-
-    void before_loop();
-
-    void after_loop();
-
-    void node_moved(Node& node);
-
-    void packet_generated(Node& where, Packet& packet);
-
-    void packet_transfered(Node& from, Node& to, Packet& packet);
-
-  private:
 
     Printer(Driver& driver, const Switch& control);
     Switch control;
