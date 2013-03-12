@@ -19,4 +19,4 @@ export network_all = CellularTorus
 export packet_all = SinglePacket
 export traffic_all = PermutationalPoisson
 export node_all = HHRfNode HHRftNode
-export logger_all = Printer
+export logger_all = Printer Data

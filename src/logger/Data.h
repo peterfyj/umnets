@@ -1,19 +1,19 @@
-#ifndef LOGGER_PRINTER_H_
-#define LOGGER_PRINTER_H_
+#ifndef LOGGER_DATA_H_
+#define LOGGER_DATA_H_
 
 /**
- * @file logger/Printer.h
- * @brief Header for Printer.
+ * @file logger/Data.h
+ * @brief Header for Data.
  */
 
 #include "driver/types.h"
 #include <cstdio>
 
 /**
- * @brief Printer that prints readable information.
+ * @brief Accustomed data analyzer.
  * @ingroup logger
  */
-class Printer {
+class Data {
 
   public:
 
@@ -21,7 +21,7 @@ class Printer {
      * @brief Create instance.
      * @return The instance that should be deleted by user.
      */
-    static Printer* create(Driver& driver);
+    static Data* create(Driver& driver);
 
     /**
      * @brief Announce the options that is recognized by the class.
@@ -33,9 +33,7 @@ class Printer {
      */
     template<typename...T>
     void log(const char* format, T...arg) const {
-      if (control.log_msg) {
-        printf(format, arg...);
-      }
+      printf(format, arg...);
     }
 
     /**
@@ -75,21 +73,10 @@ class Printer {
 
   private:
 
-    typedef struct {
-      bool log_msg;
-      bool log_before_simulation;
-      bool log_after_simulation;
-      bool log_before_loop;
-      bool log_after_loop;
-      bool log_node_moved;
-      bool log_packet_generated;
-      bool log_packet_transfered;
-    } Switch;
+    Data(Driver& driver);
 
-    Printer(Driver& driver, const Switch& control);
-    Switch control;
     Driver& driver;
 
 };
 
-#endif
+#endif 
