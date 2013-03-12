@@ -37,8 +37,10 @@ export ECHO = echo
 export TARGET = umnets
 
 # Source, obj and dependent files, separated with a space.
-export SRC = $(shell find src -name '*.cc')
-export HDR = $(shell find src -name '*.h')
+export SRC = $(foreach SETTING,$(SETTING_ALL),src/$(SETTING)/$($(SETTING)).cc)\
+						 src/driver/Driver.cc\
+						 src/driver/main.cc\
+						 src/util/Math.cc
 export OBJ = $(SRC:.cc=.o)
 export DEP = $(SRC:.cc=.d)
 
@@ -60,7 +62,7 @@ make_link: $(addsuffix .make_link,$(SETTING_ALL))
 
 # Make doxygen docs.
 .PHONY: docs
-docs: make_link $(SRC) $(HDR) Doxyfile
+docs: make_link
 	$(V)$(DOXY) Doxyfile
 
 # Clean: obj, dependency, link, docs and executable files.
