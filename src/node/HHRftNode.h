@@ -1,9 +1,9 @@
-#ifndef NODE_HHRFNODE_H_
-#define NODE_HHRFNODE_H_
+#ifndef NODE_HHRFTNODE_H_
+#define NODE_HHRFTNODE_H_
 
 /**
- * @file node/HHRfNode.h
- * @brief Header for HHRfNode.
+ * @file node/HHRftNode.h
+ * @brief Header for HHRftNode.
  */
 
 #include "driver/types.h"
@@ -11,10 +11,10 @@
 #include <unordered_map>
 
 /**
- * @brief Network node with 2HR-f algorithm.
+ * @brief Network node with 2HR-ft algorithm.
  * @ingroup node
  */
-class HHRfNode {
+class HHRftNode {
   
   public:
 
@@ -22,7 +22,7 @@ class HHRfNode {
      * @brief Create instance.
      * @return The instance that should be deleted by user.
      */
-    static HHRfNode* create(Driver& driver);
+    static HHRftNode* create(Driver& driver);
 
     /**
      * @brief Announce the options that is recognized by the class.
@@ -32,7 +32,7 @@ class HHRfNode {
     /**
      * @brief Default destructor.
      */
-    ~HHRfNode();
+    ~HHRftNode();
 
     /**
      * @brief Set the tag number of this node.
@@ -62,7 +62,7 @@ class HHRfNode {
      *
      * This should be called regarding the @ref traffic model.
      */
-    void set_dest(HHRfNode& node);
+    void set_dest(HHRftNode& node);
 
     /**
      * @brief Add a packet to this node as its locally generated packet.
@@ -72,7 +72,7 @@ class HHRfNode {
     /**
      * @brief Get the destination of this node.
      */
-    HHRfNode& get_dest();
+    HHRftNode& get_dest();
 
     /**
      * @brief Take action when being scheduled as the transmitter.
@@ -84,25 +84,29 @@ class HHRfNode {
      * @param src Where the packet comes from.
      * @param packet The packet to be received.
      */
-    void receive(HHRfNode& src, PacketPtr&& packet);
+    void receive(HHRftNode& src, PacketPtr&& packet);
 
   private:
 
     typedef std::list<PacketPtr> Queue;
-    typedef std::unordered_map<HHRfNode*, Queue> RelayMap;
-    typedef std::unordered_map<HHRfNode*, int> RequestMap;
+    typedef std::unordered_map<HHRftNode*, Queue> RelayMap;
+    typedef std::unordered_map<HHRftNode*, int> RequestMap;
+    typedef RequestMap EOPMap;
 
-    HHRfNode(Driver& driver, int f);
+    HHRftNode(Driver& driver, int f, int t);
 
-    void SD(HHRfNode& dest);
-    void SR(HHRfNode& relay);
-    void RD(HHRfNode& other_dest);
+    void SD(HHRftNode& dest);
+    void SR(HHRftNode& relay);
+    void RD(HHRftNode& other_dest);
     Queue::iterator find_in_sequent_queue(Queue& q, int tag);
+    void deferred_purge_local_queue();
+    void deferred_purge_relay_queue(HHRftNode& dest);
 
     Driver& driver;
     Queue waiting_queue;
     Queue sent_queue;
     RelayMap relay_map;
+    EOPMap eop_map;
 
     /**
      * @brief Request packet tag for a given destination node.
@@ -115,9 +119,10 @@ class HHRfNode {
      */
     RequestMap request_map;
     int node_tag;
-    HHRfNode* dest_node;
+    HHRftNode* dest_node;
     IntPos pos;
     int f, dispatched;
+    int t;
 
 };
 

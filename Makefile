@@ -38,9 +38,8 @@ export TARGET = umnets
 
 # Source, obj and dependent files, separated with a space.
 export SRC = $(foreach SETTING,$(SETTING_ALL),src/$(SETTING)/$($(SETTING)).cc)\
-						 src/driver/Driver.cc\
-						 src/driver/main.cc\
-						 src/util/Math.cc
+						 $(shell find src/driver -name "*.cc")\
+						 $(shell find src/util -name "*.cc")
 export OBJ = $(SRC:.cc=.o)
 export DEP = $(SRC:.cc=.d)
 
