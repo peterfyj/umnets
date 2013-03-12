@@ -45,6 +45,9 @@ void HHRfNode::add_packet(PacketPtr&& packet) {
   packet->set_dest(*dest_node);
   packet->set_tag(request_map[dest_node]++);
   packet->get_time_stamp().push_back(driver.get_tick());
+  if (waiting_queue.empty()) {
+    packet->get_time_stamp().push_back(driver.get_tick());
+  }
   driver.get_logger().packet_generated(*this, *packet);
   waiting_queue.push_back(std::move(packet));
 }
@@ -94,9 +97,15 @@ void HHRfNode::SD(HHRfNode& dest) {
   }
   iter = find_in_sequent_queue(waiting_queue, tag);
   if (iter != waiting_queue.end()) {
+    if (iter != waiting_queue.begin()) {
+      (*iter)->get_time_stamp().push_back(driver.get_tick());
+    }
     dest.receive(*this, std::move(*iter));
     dispatched = 0;
     waiting_queue.erase(waiting_queue.begin(), ++iter);
+    if (!waiting_queue.empty()) {
+      waiting_queue.front()->get_time_stamp().push_back(driver.get_tick());
+    }
     sent_queue.clear();
   }
 }
@@ -113,6 +122,9 @@ void HHRfNode::SR(HHRfNode& relay) {
   if (++dispatched >= f) {
     dispatched = 0;
     sent_queue.splice(sent_queue.end(), waiting_queue, waiting_queue.begin());
+    if (!waiting_queue.empty()) {
+      waiting_queue.front()->get_time_stamp().push_back(driver.get_tick());
+    }
   }
 }
 

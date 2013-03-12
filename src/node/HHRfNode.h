@@ -86,7 +86,7 @@ class HHRfNode {
      */
     void receive(HHRfNode& src, PacketPtr&& packet);
 
-  private:
+  protected:
 
     typedef std::list<PacketPtr> Queue;
     typedef std::unordered_map<HHRfNode*, Queue> RelayMap;
