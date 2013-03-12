@@ -43,30 +43,36 @@ void Printer::before_simulation() {
   if (!control.log_before_simulation) {
     return;
   }
+  printf("[%d] starting simulation.\n", driver.get_tick());
 }
 
 void Printer::after_simulation() {
   if (!control.log_after_simulation) {
     return;
   }
+  printf("[%d] simulation is over.\n", driver.get_tick());
 }
 
 void Printer::before_loop() {
   if (!control.log_before_loop) {
     return;
   }
+  printf("[%d] staring tick.\n", driver.get_tick());
 }
 
 void Printer::after_loop() {
   if (!control.log_after_loop) {
     return;
   }
+  printf("[%d] tick is over.\n", driver.get_tick());
 }
 
 void Printer::node_moved(Node& node) {
   if (!control.log_node_moved) {
     return;
   }
+  printf("[%d] (%d) move to (%d, %d)\n", driver.get_tick(), node.get_tag(),
+      node.get_pos().first, node.get_pos().second);
 }
 
 void Printer::packet_generated(Node& where, Packet& packet) {
