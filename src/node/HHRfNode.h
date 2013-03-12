@@ -19,27 +19,6 @@ class HHRfNode {
   public:
 
     /**
-     * @brief The inner queue that stores packets.
-     */
-    typedef std::list<PacketPtr> Queue;
-
-    /**
-     * @brief The map for queue with a given destination.
-     */
-    typedef std::unordered_map<HHRfNode*, Queue> RelayMap;
-    
-    /**
-     * @brief The map for request tag with a given destination.
-     *
-     * If the given destination node is that of this node, the tag is
-     * considered for the next locally generated packet.
-     *
-     * If the given destination node is this node, the tag is considered for
-     * the packet this is requesting.
-     */
-    typedef std::unordered_map<HHRfNode*, int> RequestMap;
-
-    /**
      * @brief Create instance.
      * @return The instance that should be deleted by user.
      */
@@ -108,6 +87,10 @@ class HHRfNode {
     void receive(HHRfNode& src, PacketPtr&& packet);
 
   private:
+
+    typedef std::list<PacketPtr> Queue;
+    typedef std::unordered_map<HHRfNode*, Queue> RelayMap;
+    typedef std::unordered_map<HHRfNode*, int> RequestMap;
 
     HHRfNode(Driver& driver, int f);
 
