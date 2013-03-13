@@ -244,18 +244,15 @@ void HHRftNode::deferred_purge_relay_queue(HHRftNode& dest) {
 }
 
 void HHRftNode::log_send_start(int tag, int tick) {
-  driver.get_logger().log("[%d]\tS.s\t(%d)\n", tick, tag);
 }
+
 void HHRftNode::log_send_end(int tag, int tick) {
-  driver.get_logger().log("[%d]\tS.e\t(%d)\n", tick, tag);
 }
 
 void HHRftNode::log_receive_start(int tag, int tick) {
-  driver.get_logger().log("[%d]\tD.s\t(%d)\n", tick, tag);
 }
 
 void HHRftNode::log_receive_end(int tag, int tick) {
-  driver.get_logger().log("[%d]\tD.e\t(%d)\n", tick, tag);
 }
 
 HHRftNode::HHRftNode(Driver& driver, int f, int t)

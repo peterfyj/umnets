@@ -59,6 +59,7 @@ int Driver::init(int argc, char* argv[]) {
 }
 
 void Driver::init_components() {
+  total_loop = get_option<int>("driver.loop");
   network = NetworkPtr(Network::create(*this));
   logger = LoggerPtr(Logger::create(*this));
   motion = MotionPtr(Motion::create(*this));
@@ -106,8 +107,7 @@ Traffic& Driver::get_traffic() {
 void Driver::start() {
   tick = 0;
   logger->before_simulation();
-  int loop = get_option<int>("driver.loop");
-  for (int i = 0; i < loop; ++i) {
+  for (int i = 0; i < total_loop; ++i) {
     logger->before_loop();
     tick_loop();
     logger->after_loop();
@@ -119,6 +119,10 @@ int Driver::get_tick() {
   return tick;
 }
 
+int Driver::get_total_loop() {
+  return total_loop;
+}
+
 void Driver::tick_loop() {
   ++tick;
   network->move_nodes(*motion);
@@ -128,4 +132,5 @@ void Driver::tick_loop() {
   }
   scheduler->schedule();
 }
+
 

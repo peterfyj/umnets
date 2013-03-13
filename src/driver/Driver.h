@@ -104,6 +104,11 @@ class Driver {
     int get_tick();
 
     /**
+     * @brief Get the loop count of the simulation.
+     */
+    int get_total_loop();
+
+    /**
      * @brief Called when a component needs to announce a needed option.
      */
     template<typename...T>
@@ -129,7 +134,7 @@ class Driver {
     NetworkPtr network;
     SchedulerPtr scheduler;
     TrafficPtr traffic;
-    int tick;
+    int tick, total_loop;
 
 };
 

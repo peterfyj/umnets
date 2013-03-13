@@ -175,19 +175,15 @@ auto HHRfNode::find_in_sequent_queue(Queue& q, int tag) -> Queue::iterator {
 }
 
 void HHRfNode::log_send_start(int tag) {
-  driver.get_logger().log("[%d]\tS.s\t(%d)\n", driver.get_tick(), tag);
 }
 
 void HHRfNode::log_send_end(int tag) {
-  driver.get_logger().log("[%d]\tS.e\t(%d)\n", driver.get_tick(), tag);
 }
 
 void HHRfNode::log_receive_start(int tag) {
-  driver.get_logger().log("[%d]\tD.s\t(%d)\n", driver.get_tick(), tag);
 }
 
 void HHRfNode::log_receive_end(int tag) {
-  driver.get_logger().log("[%d]\tD.e\t(%d)\n", driver.get_tick(), tag);
 }
     
 HHRfNode::HHRfNode(Driver& driver, int f)
