@@ -62,7 +62,8 @@ make_link: $(addsuffix .make_link,$(SETTING_ALL))
 # Make doxygen docs.
 .PHONY: docs
 docs: make_link
-	$(V)$(DOXY) Doxyfile
+	$(V)$(MKDIR) docs
+	$(V)$(DOXY) Doxyfile > /dev/null
 
 # Clean: obj, dependency, link, docs and executable files.
 .PHONY: clean

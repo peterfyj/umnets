@@ -20,14 +20,28 @@ class ServiceObserver {
 
   public:
 
+    /**
+     * @brief Record a service time, including a start and an end time.
+     */
     class Service {
 
       public:
 
+        /**
+         * @brief Construct with both start and end time.
+         */
         Service(int start, int end) : start(start), end(end) {
         }
 
-        int start, end;
+        /**
+         * @brief Start time of the service.
+         */
+        int start;
+
+        /**
+         * @brief End time of the service.
+         */
+        int end;
 
     };
 
