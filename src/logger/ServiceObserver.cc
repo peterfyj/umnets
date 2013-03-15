@@ -20,7 +20,7 @@ void ServiceObserver::before_simulation() {
 
 void ServiceObserver::after_simulation() {
   int late = 0;
-  int all = (int) std::min(send_time.size(), receive_time.size());
+  int all = (int) std::min(send_time.size(), receive_time.size()) - 1;
   int start = 0;
   while (start < all && send_time[start].start < starting_tick) {
     ++start;
