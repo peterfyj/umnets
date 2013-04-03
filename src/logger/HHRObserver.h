@@ -7,6 +7,7 @@
  */
 
 #include "driver/types.h"
+#include <set>
 #include <cstdio>
 
 /**
@@ -74,34 +75,18 @@ class HHRObserver {
     void packet_transfered(Node& from, Node& to, Packet& packet);
 
     /**
-     * @brief Called when the sender is starting dispatching packets.
+     * @brief Called when a packet is dropped intentionally.
      */
-    void log_send_start(int tag, int tick);
-
-    /**
-     * @brief Called when the dispatching process is over.
-     *
-     * This could happen either when f copies are dispatched or the head is
-     * timed out.
-     */
-    void log_send_end(int tag, int tick);
-
-    /**
-     * @brief Called when the receiver is starting receiving a packet.
-     */
-    void log_receive_start(int tag, int tick);
-
-    /**
-     * @brief Called when the receiving process is over.
-     */
-    void log_receive_end(int tag, int tick);
+    void packet_dropped(Node& where, Packet& packet);
 
   private:
+
+    typedef std::set<int> TagSet;
 
     HHRObserver(Driver& driver, double ratio);
 
     Driver& driver;
-    int generated, dispatched, received, next_dispatch;
+    TagSet generated, dispatched, received, dropped;
     long total_delay, total_deliver_delay;
     int starting_tick;
 

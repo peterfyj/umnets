@@ -6,7 +6,7 @@ export scheduler = TransGroup
 export network = CellularTorus
 export packet = SinglePacket
 export traffic = PermutationalPoisson
-export node = HHRfNode
+export node = HHRftNode
 export logger = HHRObserver
 
 

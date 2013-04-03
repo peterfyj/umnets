@@ -17,6 +17,8 @@ Printer* Printer::create(Driver& driver) {
       "logger.log_packet_generated");
   c.log_packet_transfered = driver.get_option<bool>(
       "logger.log_packet_transfered");
+  c.log_packet_dropped = driver.get_option<bool>(
+      "logger.log_packet_dropped");
   return new Printer(driver, c);
 };
 
@@ -37,6 +39,8 @@ void Printer::announce_options(Driver& driver) {
       "whether to log when packet is generated");
   driver.register_option("logger.log_packet_transfered", po::value<bool>(),
       "whether to log when packet is transfered");
+  driver.register_option("logger.log_packet_dropped", po::value<bool>(),
+      "whether to log when packet is dropped");
 }
 
 void Printer::before_simulation() {
@@ -104,6 +108,15 @@ void Printer::packet_transfered(Node& from, Node& to, Packet& packet) {
   printf("[%d] packet %d (%d)->(%d): %s (%d)->(%d)\n",
       driver.get_tick(), packet.get_tag(), packet.get_src().get_tag(),
       packet.get_dest().get_tag(), now, from.get_tag(), to.get_tag());
+}
+
+void Printer::packet_dropped(Node& where, Packet& packet) {
+  if (!control.log_packet_dropped) {
+    return;
+  }
+  printf("[%d] packet %d (%d)->(%d) dropped intentionally at (%d)\n",
+      driver.get_tick(), packet.get_tag(), packet.get_src().get_tag(),
+      packet.get_dest().get_tag(), where.get_tag());
 }
 
 Printer::Printer(Driver& driver, const Switch& control)

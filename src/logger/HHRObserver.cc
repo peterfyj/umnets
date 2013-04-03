@@ -19,11 +19,16 @@ void HHRObserver::before_simulation() {
 }
 
 void HHRObserver::after_simulation() {
-  printf("Generated: %d\n", generated);
-  printf("Dispatched: %d\n", dispatched);
-  printf("Received: %d\n", received);
-  printf("Average delay: %ld\n", total_delay / received);
-  printf("Average deliver delay: %ld\n", total_deliver_delay / received);
+  printf("Generated: %d\n", (int) generated.size());
+  printf("Dispatched: %d\n", (int) dispatched.size());
+  printf("Received: %d\n", (int) received.size());
+  std::vector<int> diff;
+  std::set_difference(dropped.begin(), dropped.end(), received.begin(),
+      received.end(), std::inserter(diff, diff.end()));
+  printf("Dropped and not received: %d\n", (int) diff.size());
+  printf("Average delay: %ld\n", total_delay / (long) received.size());
+  printf("Average deliver delay: %ld\n",
+      total_deliver_delay / (long) received.size());
 }
 
 void HHRObserver::before_loop() {
@@ -39,7 +44,7 @@ void HHRObserver::packet_generated(Node& where, Packet& packet) {
   if (driver.get_tick() < starting_tick) {
     return;
   }
-  ++generated;
+  generated.insert(packet.get_tag());
 }
 
 void HHRObserver::packet_transfered(Node& from, Node& to, Packet& packet) {
@@ -47,10 +52,7 @@ void HHRObserver::packet_transfered(Node& from, Node& to, Packet& packet) {
     return;
   }
   if (&from == &packet.get_src() && &to != &packet.get_dest()) {  // SR.
-    if (packet.get_tag() >= next_dispatch) {
-      ++dispatched;
-      next_dispatch = packet.get_tag() + 1;
-    }
+    dispatched.insert(packet.get_tag());
   } else {  // SD or RD.
     auto& time_stamp = packet.get_time_stamp();
     if (&from == &packet.get_src()) {  // SD.
@@ -60,12 +62,18 @@ void HHRObserver::packet_transfered(Node& from, Node& to, Packet& packet) {
       total_delay += time_stamp[3] - time_stamp[0];
       total_deliver_delay += time_stamp[3] - time_stamp[1];
     }
-    ++received;
+    received.insert(packet.get_tag());
   }
 }
 
+void HHRObserver::packet_dropped(Node& where, Packet& packet) {
+  if (driver.get_tick() < starting_tick) {
+    return;
+  }
+  dropped.insert(packet.get_tag());
+}
+
 HHRObserver::HHRObserver(Driver& driver, double ratio)
-  : driver(driver), generated(0), dispatched(0), received(0)
-  , next_dispatch(0), total_delay(0), total_deliver_delay(0) {
+  : driver(driver), total_delay(0), total_deliver_delay(0) {
   starting_tick = int(driver.get_total_loop() * (1 - ratio));
 }

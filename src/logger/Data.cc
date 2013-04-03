@@ -36,5 +36,9 @@ void Data::packet_transfered(Node& from, Node& to, Packet& packet) {
   // TODO
 }
 
+void Data::packet_dropped(Node& where, Packet& packet) {
+  // TODO
+}
+
 Data::Data(Driver& driver) : driver(driver) {
 }

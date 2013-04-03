@@ -73,6 +73,11 @@ class Printer {
      */
     void packet_transfered(Node& from, Node& to, Packet& packet);
 
+    /**
+     * @brief Called when a packet is dropped intentionally.
+     */
+    void packet_dropped(Node& where, Packet& packet);
+
   private:
 
     typedef struct {
@@ -84,6 +89,7 @@ class Printer {
       bool log_node_moved;
       bool log_packet_generated;
       bool log_packet_transfered;
+      bool log_packet_dropped;
     } Switch;
 
     Printer(Driver& driver, const Switch& control);

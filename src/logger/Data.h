@@ -71,6 +71,11 @@ class Data {
      */
     void packet_transfered(Node& from, Node& to, Packet& packet);
 
+    /**
+     * @brief Called when a packet is dropped intentionally.
+     */
+    void packet_dropped(Node& where, Packet& packet);
+
   private:
 
     Data(Driver& driver);

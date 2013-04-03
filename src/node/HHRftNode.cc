@@ -203,6 +203,7 @@ void HHRftNode::deferred_purge_local_queue() {
       // Note that we don't put out of date packets into sent queue because we
       // no longer need them. If sent queue is not empty now, we can make the
       // assertion that the front packet in waiting queue is on time.
+      driver.get_logger().packet_dropped(*this, *waiting_queue.front());
       waiting_queue.pop_front();
       dispatched = 0;
       if (!waiting_queue.empty()) {
@@ -220,6 +221,7 @@ void HHRftNode::deferred_purge_relay_queue(HHRftNode& dest) {
   int tick = driver.get_tick();
   while (!q.empty() && tick - q.front()->get_time_stamp()[1] > t) {
     eop = q.front()->get_tag() + 1;
+    driver.get_logger().packet_dropped(*this, *q.front());
     q.pop_front();
   }
 }
