@@ -101,10 +101,6 @@ class HHRftNode {
     Queue::iterator find_in_sequent_queue(Queue& q, int tag);
     void deferred_purge_local_queue();
     void deferred_purge_relay_queue(HHRftNode& dest);
-    void log_send_start(int tag, int tick);
-    void log_send_end(int tag, int tick);
-    void log_receive_start(int tag, int tick);
-    void log_receive_end(int tag, int tick);
 
     Driver& driver;
     Queue waiting_queue;

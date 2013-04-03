@@ -98,10 +98,6 @@ class HHRfNode {
     void SR(HHRfNode& relay);
     void RD(HHRfNode& other_dest);
     Queue::iterator find_in_sequent_queue(Queue& q, int tag);
-    void log_send_start(int tag);
-    void log_send_end(int tag);
-    void log_receive_start(int tag);
-    void log_receive_end(int tag);
 
     Driver& driver;
     Queue waiting_queue;

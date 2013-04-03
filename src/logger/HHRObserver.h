@@ -1,55 +1,29 @@
-#ifndef LOGGER_SERVICEOBSERVER_H_
-#define LOGGER_SERVICEOBSERVER_H_
+#ifndef LOGGER_HHROBSERVER_H_
+#define LOGGER_HHROBSERVER_H_
 
 /**
- * @file logger/ServiceObserver.h
- * @brief Header for ServiceObserver.
+ * @file logger/HHRObserver.h
+ * @brief Header for HHRObserver.
  */
 
 #include "driver/types.h"
-#include <vector>
 #include <cstdio>
 
 /**
- * @brief Observe data including service time.
+ * @brief Observe data.
  * @ingroup logger
  *
  * This is mainly for 2HR-f and its extended algorithms.
  */
-class ServiceObserver {
+class HHRObserver {
 
   public:
-
-    /**
-     * @brief Record a service time, including a start and an end time.
-     */
-    class Service {
-
-      public:
-
-        /**
-         * @brief Construct with both start and end time.
-         */
-        Service(int start, int end) : start(start), end(end) {
-        }
-
-        /**
-         * @brief Start time of the service.
-         */
-        int start;
-
-        /**
-         * @brief End time of the service.
-         */
-        int end;
-
-    };
 
     /**
      * @brief Create instance.
      * @return The instance that should be deleted by user.
      */
-    static ServiceObserver* create(Driver& driver);
+    static HHRObserver* create(Driver& driver);
 
     /**
      * @brief Announce the options that is recognized by the class.
@@ -124,16 +98,12 @@ class ServiceObserver {
 
   private:
 
-    typedef std::vector<Service> ServiceTime;
-    
-    ServiceObserver(Driver& driver, double ratio);
+    HHRObserver(Driver& driver, double ratio);
 
     Driver& driver;
-    int generated, dispatched, received, last_dispatch;
+    int generated, dispatched, received, next_dispatch;
+    long total_delay, total_deliver_delay;
     int starting_tick;
-    ServiceTime send_time, receive_time;
-
-    
 
 };
 

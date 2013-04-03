@@ -46,7 +46,6 @@ void HHRfNode::add_packet(PacketPtr&& packet) {
   packet->set_tag(request_map[dest_node]++);
   packet->get_time_stamp().push_back(driver.get_tick());
   if (waiting_queue.empty()) {
-    log_send_start(packet->get_tag());
     packet->get_time_stamp().push_back(driver.get_tick());
   }
   driver.get_logger().packet_generated(*this, *packet);
@@ -80,9 +79,7 @@ void HHRfNode::receive(HHRfNode& src, PacketPtr&& packet) {
   packet->get_time_stamp().push_back(driver.get_tick());
   driver.get_logger().packet_transfered(src, *this, *packet);
   if (&packet->get_dest() == this) {  // SD or RD.
-    int& r = request_map[this];
-    log_receive_end(r);
-    log_receive_start(++r);
+    ++request_map[this];
     packet = nullptr;
   } else { // SR.
     request_map[&packet->get_dest()] = packet->get_tag() + 1;
@@ -101,16 +98,12 @@ void HHRfNode::SD(HHRfNode& dest) {
   iter = find_in_sequent_queue(waiting_queue, tag);
   if (iter != waiting_queue.end()) {
     if (iter != waiting_queue.begin()) {
-      log_send_end((*iter)->get_tag() - 1);
-      log_send_start((*iter)->get_tag());
       (*iter)->get_time_stamp().push_back(driver.get_tick());
     }
-    log_send_end((*iter)->get_tag());
     dest.receive(*this, std::move(*iter));
     dispatched = 0;
     waiting_queue.erase(waiting_queue.begin(), ++iter);
     if (!waiting_queue.empty()) {
-      log_send_start(waiting_queue.front()->get_tag());
       waiting_queue.front()->get_time_stamp().push_back(driver.get_tick());
     }
     sent_queue.clear();
@@ -128,10 +121,8 @@ void HHRfNode::SR(HHRfNode& relay) {
   relay.receive(*this, PacketPtr(ptr->clone()));
   if (++dispatched >= f) {
     dispatched = 0;
-    log_send_end(ptr->get_tag());
     sent_queue.splice(sent_queue.end(), waiting_queue, waiting_queue.begin());
     if (!waiting_queue.empty()) {
-      log_send_start(waiting_queue.front()->get_tag());
       waiting_queue.front()->get_time_stamp().push_back(driver.get_tick());
     }
   }
@@ -174,18 +165,6 @@ auto HHRfNode::find_in_sequent_queue(Queue& q, int tag) -> Queue::iterator {
   }
 }
 
-void HHRfNode::log_send_start(int tag) {
-}
-
-void HHRfNode::log_send_end(int tag) {
-}
-
-void HHRfNode::log_receive_start(int tag) {
-}
-
-void HHRfNode::log_receive_end(int tag) {
-}
-    
 HHRfNode::HHRfNode(Driver& driver, int f)
   : driver(driver), f(f), dispatched(0) {
 }

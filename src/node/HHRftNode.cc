@@ -49,7 +49,6 @@ void HHRftNode::add_packet(PacketPtr&& packet) {
   packet->set_tag(request_map[dest_node]++);
   packet->get_time_stamp().push_back(driver.get_tick());
   if (waiting_queue.empty()) {
-    log_send_start(packet->get_tag(), driver.get_tick());
     packet->get_time_stamp().push_back(driver.get_tick());
   }
   driver.get_logger().packet_generated(*this, *packet);
@@ -86,9 +85,7 @@ void HHRftNode::receive(HHRftNode& src, PacketPtr&& packet) {
   packet->get_time_stamp().push_back(driver.get_tick());
   driver.get_logger().packet_transfered(src, *this, *packet);
   if (&packet->get_dest() == this) {  // SD or RD.
-    int& r = request_map[this];
-    log_receive_end(r, driver.get_tick());
-    log_receive_start(++r, driver.get_tick());
+    ++request_map[this];
     packet = nullptr;
   } else { // SR.
     request_map[&packet->get_dest()] = packet->get_tag() + 1;
@@ -100,10 +97,6 @@ void HHRftNode::SD(HHRftNode& dest) {
   int eop = eop_map[&dest];
   int& tag = dest.request_map[&dest];
   if (eop > tag) {
-    for (int i = tag + 1; i <= eop; ++i) {
-      dest.log_receive_end(i - 1, driver.get_tick());
-      dest.log_receive_start(i, driver.get_tick());
-    }
     tag = eop;
   }
   auto iter = find_in_sequent_queue(sent_queue, tag);
@@ -116,15 +109,11 @@ void HHRftNode::SD(HHRftNode& dest) {
   if (iter != waiting_queue.end()) {
     if (iter != waiting_queue.begin()) {
       (*iter)->get_time_stamp().push_back(driver.get_tick());
-      log_send_end((*iter)->get_tag() - 1, driver.get_tick());
-      log_send_start((*iter)->get_tag(), driver.get_tick());
     }
-    log_send_end((*iter)->get_tag(), driver.get_tick());
     dest.receive(*this, std::move(*iter));
     dispatched = 0;
     waiting_queue.erase(waiting_queue.begin(), ++iter);
     if (!waiting_queue.empty()) {
-      log_send_start(waiting_queue.front()->get_tag(), driver.get_tick());
       waiting_queue.front()->get_time_stamp().push_back(driver.get_tick());
     }
     sent_queue.clear();
@@ -142,10 +131,8 @@ void HHRftNode::SR(HHRftNode& relay) {
   relay.receive(*this, PacketPtr(ptr->clone()));
   if (++dispatched >= f) {
     dispatched = 0;
-    log_send_end(ptr->get_tag(), driver.get_tick());
     sent_queue.splice(sent_queue.end(), waiting_queue, waiting_queue.begin());
     if (!waiting_queue.empty()) {
-      log_send_start(waiting_queue.front()->get_tag(), driver.get_tick());
       waiting_queue.front()->get_time_stamp().push_back(driver.get_tick());
     }
   }
@@ -155,10 +142,6 @@ void HHRftNode::RD(HHRftNode& other_dest) {
   int eop = eop_map[&other_dest];
   int& tag = other_dest.request_map[&other_dest];
   if (eop > tag) {
-    for (int i = tag + 1; i <= eop; ++i) {
-      other_dest.log_receive_end(i - 1, driver.get_tick());
-      other_dest.log_receive_start(i, driver.get_tick());
-    }
     tag = eop;
   }
   Queue& relay_queue = relay_map[&other_dest];
@@ -217,14 +200,12 @@ void HHRftNode::deferred_purge_local_queue() {
     int front_time = waiting_queue.front()->get_time_stamp()[1];
     if (tick - front_time > t) {  // Front packet should have been purged.
       eop = waiting_queue.front()->get_tag() + 1;
-      log_send_end(waiting_queue.front()->get_tag(), front_time + t + 1);
       // Note that we don't put out of date packets into sent queue because we
       // no longer need them. If sent queue is not empty now, we can make the
       // assertion that the front packet in waiting queue is on time.
       waiting_queue.pop_front();
       dispatched = 0;
       if (!waiting_queue.empty()) {
-        log_send_start(waiting_queue.front()->get_tag(), front_time + t + 1);
         waiting_queue.front()->get_time_stamp().push_back(front_time + t + 1);
       }
     } else {
@@ -241,18 +222,6 @@ void HHRftNode::deferred_purge_relay_queue(HHRftNode& dest) {
     eop = q.front()->get_tag() + 1;
     q.pop_front();
   }
-}
-
-void HHRftNode::log_send_start(int tag, int tick) {
-}
-
-void HHRftNode::log_send_end(int tag, int tick) {
-}
-
-void HHRftNode::log_receive_start(int tag, int tick) {
-}
-
-void HHRftNode::log_receive_end(int tag, int tick) {
 }
 
 HHRftNode::HHRftNode(Driver& driver, int f, int t)
