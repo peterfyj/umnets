@@ -7,6 +7,7 @@
  */
 
 #include "driver/types.h"
+#include "driver/Driver.h"
 #include <cstdio>
 
 /**
@@ -34,6 +35,7 @@ class Printer {
     template<typename...T>
     void log(const char* format, T...arg) const {
       if (control.log_msg) {
+        printf("[%d] ", driver.get_tick());
         printf(format, arg...);
       }
     }

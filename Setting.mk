@@ -6,8 +6,8 @@ export scheduler = TransGroup
 export network = CellularTorus
 export packet = SinglePacket
 export traffic = PermutationalPoisson
-export node = HHRftNode
-export logger = HHRObserver
+export node = HHRtkpNode
+export logger = Printer
 
 
 #################################################
@@ -18,5 +18,5 @@ export scheduler_all = TransGroup
 export network_all = CellularTorus
 export packet_all = SinglePacket
 export traffic_all = PermutationalPoisson
-export node_all = HHRfNode HHRftNode
+export node_all = HHRfNode HHRftNode HHRtkpNode
 export logger_all = Printer Data HHRObserver

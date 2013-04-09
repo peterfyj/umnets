@@ -68,7 +68,7 @@ void Driver::init_components() {
   for (int i = 0; i < node_count; ++i) {
     NodePtr n(Node::create(*this));
     n->set_tag(i);
-    network->add_node(*motion, std::move(n));
+    network->add_node(*motion, move(n));
   }
   traffic = TrafficPtr(Traffic::create(*this));
   traffic->create_traffic();
@@ -123,8 +123,24 @@ int Driver::get_total_loop() {
   return total_loop;
 }
 
+auto Driver::register_time_out(int time_out_tick, Callback&& func)
+  -> TimerToken {
+  return time_out_map.insert(TimeOutRecord(time_out_tick, move(func)));
+}
+
+void Driver::unregister_time_out(TimerToken token) {
+  time_out_map.erase(token);
+}
+
 void Driver::tick_loop() {
   ++tick;
+  if (time_out_map.count(tick) > 0) {
+    auto range = time_out_map.equal_range(tick);
+    for (auto iter = range.first; iter != range.second; ++iter) {
+      iter->second();
+    }
+    time_out_map.erase(tick);
+  }
   network->move_nodes(*motion);
   auto iter_end = network->end();
   for (auto iter = network->begin(); iter != iter_end; ++iter) {

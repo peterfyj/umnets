@@ -36,7 +36,7 @@ void PermutationalPoisson::create_traffic() {
   int i = 0;
   auto iter_end = network.end();
   for (auto iter = network.begin(); iter != iter_end; ++iter) {
-    all_node[i++] = iter.operator->();
+    all_node[i++] = &*iter;
   }
   for (i = 0; i < count; ++i) {
     Node* d = all_node[derangement[i]];

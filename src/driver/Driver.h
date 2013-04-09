@@ -9,6 +9,7 @@
 #include "driver/types.h"
 #include <boost/program_options.hpp>
 #include <string>
+#include <map>
 #include <iostream>
 #include <cstdlib>
 
@@ -20,6 +21,9 @@ namespace po = boost::program_options;
 class Driver {
   
   public:
+
+    typedef std::function<void ()> Callback;
+    typedef std::multimap<int, Callback>::iterator TimerToken;
 
     /**
      * @brief Default constructor.
@@ -116,7 +120,14 @@ class Driver {
       config_opt.add_options()(opt...);
     }
 
+    TimerToken register_time_out(int time_out_tick, Callback&& func);
+
+    void unregister_time_out(TimerToken token);
+
   private:
+
+    typedef std::pair<int, Callback> TimeOutRecord;
+    typedef std::multimap<int, Callback> TimeOutMap;
 
     template<typename...T>
     void register_generic_option(T...opt) {
@@ -135,6 +146,7 @@ class Driver {
     SchedulerPtr scheduler;
     TrafficPtr traffic;
     int tick, total_loop;
+    TimeOutMap time_out_map;
 
 };
 

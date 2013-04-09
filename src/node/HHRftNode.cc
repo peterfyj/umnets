@@ -63,7 +63,7 @@ void HHRftNode::scheduled() {
   Network& network = driver.get_network();
   auto iter_end = network.receiver_end(*this);
   for (auto iter = network.receiver_begin(*this); iter != iter_end; ++iter) {
-    if (dest_node == iter.operator->()) {
+    if (dest_node == &*iter) {
       deferred_purge_local_queue();
       SD(*iter);
       return;
