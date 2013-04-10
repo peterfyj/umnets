@@ -76,9 +76,9 @@ void HHRtkpNode::scheduled() {
   if (Math::happen(p)) {
     SR();
   } else {
-    auto p = Network::random_choose(network.receiver_begin(*this), iter_end);
-    if (p != iter_end) {
-      RD(*p);
+    auto ptr = Network::random_choose(network.receiver_begin(*this), iter_end);
+    if (ptr != iter_end) {
+      RD(*ptr);
     }
   }
 }

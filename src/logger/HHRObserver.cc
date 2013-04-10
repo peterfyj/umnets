@@ -26,6 +26,10 @@ void HHRObserver::after_simulation() {
   std::set_difference(dropped.begin(), dropped.end(), received.begin(),
       received.end(), std::inserter(diff, diff.end()));
   printf("Dropped and not received: %d\n", (int) diff.size());
+  if (!dispatched.empty()) {
+    printf("Received / Dispatched = %lf\n",
+        double(received.size()) / dispatched.size());
+  }
   if  (!received.empty()) {
     printf("Average delay: %ld\n", total_delay / (long) received.size());
     printf("Average deliver delay: %ld\n",
@@ -58,6 +62,7 @@ void HHRObserver::packet_transfered(Node& from, Node& to, Packet& packet) {
   } else {  // SD or RD.
     auto& time_stamp = packet.get_time_stamp();
     if (&from == &packet.get_src()) {  // SD.
+      dispatched.insert(packet.get_tag());
       total_delay += time_stamp[2] - time_stamp[0];
       total_deliver_delay += time_stamp[2] - time_stamp[1];
     } else {  // RD.
