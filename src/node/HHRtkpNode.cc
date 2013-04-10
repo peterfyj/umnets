@@ -76,7 +76,10 @@ void HHRtkpNode::scheduled() {
   if (Math::happen(p)) {
     SR();
   } else {
-    RD(*Network::random_choose(network.receiver_begin(*this), iter_end));
+    auto p = Network::random_choose(network.receiver_begin(*this), iter_end);
+    if (p != iter_end) {
+      RD(*p);
+    }
   }
 }
 
@@ -109,6 +112,7 @@ Driver::Callback HHRtkpNode::get_local_time_out_callback() {
     auto& queue = queue_map[dest_node];
     auto& token = token_map[dest_node];
     queue.front()->get_time_stamp().push_back(driver.get_tick());
+    driver.get_logger().packet_dropped(*this, *queue.front());
     queue.pop_front();
     if (!queue.empty()) {
       queue.front()->get_time_stamp().push_back(driver.get_tick());
@@ -123,6 +127,7 @@ Driver::Callback HHRtkpNode::get_relay_time_out_callback(HHRtkpNode& dest) {
     auto& queue = queue_map[&dest];
     auto& token = token_map[&dest];
     queue.front()->get_time_stamp().push_back(driver.get_tick());
+    driver.get_logger().packet_dropped(*this, *queue.front());
     queue.pop_front();
     if (!queue.empty()) {
       int stamp = queue.front()->get_time_stamp()[1];
@@ -156,10 +161,14 @@ void HHRtkpNode::SR() {
   if (local_queue.empty()) {
     return;
   }
-  driver.unregister_time_out(token_map[dest_node]);
   auto& network = driver.get_network();
+  auto iter = network.receiver_begin(*this);
   auto iter_end = network.receiver_end(*this);
-  for (auto iter = network.receiver_begin(*this); iter != iter_end; ++iter) {
+  if (iter == iter_end) {
+    return;
+  }
+  driver.unregister_time_out(token_map[dest_node]);
+  for (; iter != iter_end; ++iter) {
     iter->receive(*this, PacketPtr(local_queue.front()->clone()));
   }
   local_queue.pop_front();

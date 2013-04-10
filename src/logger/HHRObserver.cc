@@ -26,9 +26,11 @@ void HHRObserver::after_simulation() {
   std::set_difference(dropped.begin(), dropped.end(), received.begin(),
       received.end(), std::inserter(diff, diff.end()));
   printf("Dropped and not received: %d\n", (int) diff.size());
-  printf("Average delay: %ld\n", total_delay / (long) received.size());
-  printf("Average deliver delay: %ld\n",
-      total_deliver_delay / (long) received.size());
+  if  (!received.empty()) {
+    printf("Average delay: %ld\n", total_delay / (long) received.size());
+    printf("Average deliver delay: %ld\n",
+        total_deliver_delay / (long) received.size());
+  }
 }
 
 void HHRObserver::before_loop() {

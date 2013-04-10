@@ -114,7 +114,7 @@ void Printer::packet_dropped(Node& where, Packet& packet) {
   if (!control.log_packet_dropped) {
     return;
   }
-  printf("[%d] packet %d (%d)->(%d) dropped intentionally at (%d)\n",
+  printf("[%d] packet %d (%d)->(%d): dropped at (%d)\n",
       driver.get_tick(), packet.get_tag(), packet.get_src().get_tag(),
       packet.get_dest().get_tag(), where.get_tag());
 }

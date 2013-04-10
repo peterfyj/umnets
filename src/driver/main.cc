@@ -2,8 +2,9 @@
 #include "util/Debug.h"
 #include <iostream>
 
+Driver driver;
+
 int main(int argc, char* argv[]) {
-  Driver driver;
   driver.prepare_components();
   int code = driver.init(argc, argv);
   if (code >= 0) {

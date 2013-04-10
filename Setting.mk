@@ -7,7 +7,7 @@ export network = CellularTorus
 export packet = SinglePacket
 export traffic = PermutationalPoisson
 export node = HHRtkpNode
-export logger = Printer
+export logger = HHRObserver
 
 
 #################################################
