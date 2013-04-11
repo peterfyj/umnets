@@ -9,4 +9,5 @@ src/packet/packet.h
 src/scheduler/scheduler.h
 src/traffic/traffic.h
 docs/
+data/
 umnets
