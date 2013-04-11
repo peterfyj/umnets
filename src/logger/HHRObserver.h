@@ -86,7 +86,7 @@ class HHRObserver {
     HHRObserver(Driver& driver, double ratio);
 
     Driver& driver;
-    TagSet generated, dispatched, received, dropped;
+    TagSet generated, dispatched, direct_received, received, dropped;
     long total_delay, total_deliver_delay;
     int starting_tick;
 

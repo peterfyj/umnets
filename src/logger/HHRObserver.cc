@@ -31,6 +31,8 @@ void HHRObserver::after_simulation() {
         double(received.size()) / dispatched.size());
   }
   if  (!received.empty()) {
+    printf("Direct received / Received = %lf\n",
+        double(direct_received.size()) / received.size());
     printf("Average delay: %ld\n", total_delay / (long) received.size());
     printf("Average deliver delay: %ld\n",
         total_deliver_delay / (long) received.size());
@@ -63,6 +65,7 @@ void HHRObserver::packet_transfered(Node& from, Node& to, Packet& packet) {
     auto& time_stamp = packet.get_time_stamp();
     if (&from == &packet.get_src()) {  // SD.
       dispatched.insert(packet.get_tag());
+      direct_received.insert(packet.get_tag());
       total_delay += time_stamp[2] - time_stamp[0];
       total_deliver_delay += time_stamp[2] - time_stamp[1];
     } else {  // RD.
