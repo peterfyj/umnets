@@ -51,12 +51,12 @@ void HHRtkpNode::add_packet(PacketPtr&& packet) {
   packet->set_tag(seq++);
   packet->get_time_stamp().push_back(driver.get_tick());
   auto& local_queue = queue_map[dest_node];
+  driver.get_logger().packet_generated(*this, *packet);
   if (local_queue.empty()) {
     packet->get_time_stamp().push_back(driver.get_tick());
     token_map[dest_node] = driver.register_time_out(driver.get_tick() + t,
         get_local_time_out_callback());
   }
-  driver.get_logger().packet_generated(*this, *packet);
   local_queue.push_back(std::move(packet));
 }
 

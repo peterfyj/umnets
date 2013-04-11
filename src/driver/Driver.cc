@@ -135,11 +135,18 @@ void Driver::unregister_time_out(TimerToken token) {
 void Driver::tick_loop() {
   ++tick;
   if (time_out_map.count(tick) > 0) {
-    auto range = time_out_map.equal_range(tick);
-    for (auto iter = range.first; iter != range.second; ++iter) {
-      iter->second();
+    auto iter_end = time_out_map.end();
+    while (true) {
+      // equal_range() is not proper here because the callbacks may insert new
+      // callbacks so that the range end would not be correct.
+      auto iter = time_out_map.find(tick);
+      if (iter == iter_end) {
+        break;
+      } else {
+        iter->second();
+        time_out_map.erase(iter);
+      }
     }
-    time_out_map.erase(tick);
   }
   network->move_nodes(*motion);
   auto iter_end = network->end();
