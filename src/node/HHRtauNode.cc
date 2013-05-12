@@ -17,9 +17,11 @@ HHRtauNode* HHRtauNode::create(Driver& driver) {
 
 void HHRtauNode::announce_options(Driver& driver) {
   driver.register_option("node.count", po::value<int>(), "count of all nodes");
-  driver.register_option("node.t", po::value<int>(), "time threshold");
-  driver.register_option("node.k", po::value<int>(), "relay buffer limit");
-  driver.register_option("node.p", po::value<double>(), "S-R probability");
+  driver.register_option("node.tau", po::value<int>(), "time threshold");
+  driver.register_option("node.beta", po::value<int>(), "relay buffer limit");
+  driver.register_option("node.beta_local", po::value<int>(), 
+      "relay buffer limit");
+  driver.register_option("node.q", po::value<double>(), "S-R probability");
 }
 
 HHRtauNode::~HHRtauNode() {
