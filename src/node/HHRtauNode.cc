@@ -172,14 +172,10 @@ void HHRtauNode::SR() {
   if (local_queue.empty()) {
     return;
   }
-  auto& network = driver.get_network();
-  auto iter = network.receiver_begin(*this);
-  auto iter_end = network.receiver_end(*this);
-  if (iter == iter_end) {
-    return;
-  }
   driver.unregister_time_out(token_map[dest_node]);
-  for (; iter != iter_end; ++iter) {
+  auto& network = driver.get_network();
+  auto iter_end = network.receiver_end(*this);
+  for (auto iter = network.receiver_begin(*this); iter != iter_end; ++iter) {
     iter->receive(*this, PacketPtr(local_queue.front()->clone()));
   }
   local_queue.pop_front();
