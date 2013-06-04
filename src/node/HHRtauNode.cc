@@ -150,11 +150,12 @@ Driver::Callback HHRtauNode::get_relay_time_out_callback(HHRtauNode& dest) {
 
 void HHRtauNode::SD(HHRtauNode& dest) {
   auto& local_queue = queue_map[&dest];
-  if (!local_queue.empty()) {
-    driver.unregister_time_out(token_map[&dest]);
-    dest.receive(*this, std::move(local_queue.front()));
-    local_queue.pop_front();
+  if (local_queue.empty()) {
+    return;
   }
+  driver.unregister_time_out(token_map[&dest]);
+  dest.receive(*this, std::move(local_queue.front()));
+  local_queue.pop_front();
   for (int i = 0; !local_queue.empty() && i < beta; ++i) {
     local_queue.front()->get_time_stamp().push_back(driver.get_tick());
     dest.receive(*this, std::move(local_queue.front()));
