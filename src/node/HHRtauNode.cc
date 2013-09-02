@@ -107,6 +107,7 @@ void HHRtauNode::receive(HHRtauNode& src, PacketPtr&& packet) {
       }
       relay_queue.push_back(std::move(packet));
     } else {
+      driver.get_logger().packet_dropped(*this, *packet);
       packet = nullptr;
     }
   }
