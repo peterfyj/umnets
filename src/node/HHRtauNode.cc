@@ -156,7 +156,7 @@ void HHRtauNode::SD(HHRtauNode& dest) {
   driver.unregister_time_out(token_map[&dest]);
   dest.receive(*this, std::move(local_queue.front()));
   local_queue.pop_front();
-  for (int i = 0; !local_queue.empty() && i < beta; ++i) {
+  for (int i = 0; !local_queue.empty() && i < beta - 1; ++i) {
     local_queue.front()->get_time_stamp().push_back(driver.get_tick());
     dest.receive(*this, std::move(local_queue.front()));
     local_queue.pop_front();
