@@ -1,3 +1,5 @@
+SHELL = /bin/bash
+
 ##################################################
 # User settings are validated in the region below.
 ##################################################
