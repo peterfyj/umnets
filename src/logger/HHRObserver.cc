@@ -69,8 +69,10 @@ void HHRObserver::packet_transfered(Node& from, Node& to, Packet& packet) {
       total_delay += time_stamp[2] - time_stamp[0];
       total_deliver_delay += time_stamp[2] - time_stamp[1];
     } else {  // RD.
-      total_delay += time_stamp[3] - time_stamp[0];
-      total_deliver_delay += time_stamp[3] - time_stamp[1];
+      if (received.find(packet.get_tag()) == received.end()) {
+        total_delay += time_stamp[3] - time_stamp[0];
+        total_deliver_delay += time_stamp[3] - time_stamp[1];
+      }
     }
     received.insert(packet.get_tag());
   }
