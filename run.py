@@ -6,9 +6,7 @@ import threading
 import os
 
 RANGES = {
-  "node.k": [i + 1 for i in range(4)],
-  "node.p": [0.1 * (i + 1) for i in range(9)],
-  "traffic.lambda": [0.0002 * (i + 1) for i in range(20)],
+  "traffic.lambda": [0.0001 * i for i in range(20, 61)],
 }
 
 def get_param(k, v):
@@ -28,6 +26,7 @@ def exe(param):
     os.system("./umnets {} > data/{}".format(param_list, filename))
 
 os.system("mkdir -p data")
+os.system("cp config.cfg data/")
 for param in lists:
   threading.Thread(target = exe, args = (param, )).start()
 
